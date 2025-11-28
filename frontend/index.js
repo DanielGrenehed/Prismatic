@@ -52,6 +52,9 @@ function onUpdateMessage(json) {
 		groups = json.groups.map((g) => new Group(g, fixtures));
 	}
 	if (json.hasOwnProperty("inputs")) {
+    home.ui_elements.forEach((i) => {
+      if (i.destruct) i.destruct();
+    });
 		home.body.innerHTML = "";
 		inputs = json.inputs.map((i) => {
       let input = new InputGroup(i, groups);

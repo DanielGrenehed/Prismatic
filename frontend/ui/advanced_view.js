@@ -130,8 +130,17 @@ function constructSelectionMenu() {
   return {updatedSelection}
 }
 
+function destructColorPicker() {
+  let advanced = getMenu('advanced');
+  if (advanced.color_picker) {
+    console.log("advanced.color_picker exists:", advanced.color_picker);
+    advanced.color_picker.destruct();
+  }
+}
+
 function constructAdvancedView(fixtures, on_new_scene_cb) {
   let advanced = getMenu('advanced');
+  destructColorPicker();
 	advanced.ui_elements = [];
 
   let input_container = document.getElementById("d-input-container");
@@ -147,6 +156,8 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 	
   let previously_selected = advanced.selected_fixtures;  
 	advanced.selected_fixtures = [];
+
+
 	advanced.color_picker = null;
 	advanced.sliders = [];
 	
@@ -176,8 +187,10 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 
 		input_container.innerHTML = "";
 		updatedSelection(advanced.selected_fixtures.length);
-		
+    destructColorPicker();
+
 		if (["r","g","b"].every(v => channels.includes(v))) {
+      
 			advanced.color_picker = new ColorPicker((cp) => {
 				let rgb = cp.rgb;
 				updateFixtures([

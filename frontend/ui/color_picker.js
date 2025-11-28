@@ -2,6 +2,34 @@ import {Slider} from './slider';
 import {createChild, createTabbedContainer, newElement} from './elementUtil';
 import {HSVToRGB, RGBToHSV, RGBToCMY, CMYToRGB, colorToString, stringToColor, isHexColor} from './colorUtil';
 
+let swatches = [];
+
+let pickers = [];
+
+function __addSwatch(swatch) {
+  if (!swatches.includes(swatch)) {
+    swatches.push(swatch);
+  }
+}
+
+function addGlobalSwatches(swatch) {
+  pickers = pickers.filter((p) => p);
+  //console.log(`Pickers(${pickers.length}): `, pickers); 
+  pickers.forEach((p) => p.addSwatches(swatch));
+  if (Array.isArray(swatch)) {
+    swatch.forEach((s) => __addSwatch(s));
+  } else {
+    __addSwatch(swatch);
+  }
+}
+
+function addPicker(picker) {
+  if (!pickers.includes(picker)) {
+    pickers.push(picker);
+    picker.addSwatches(swatches);
+  }
+}
+
 class ColorPicker {
 	constructor(callback) {
 		this.callback = callback;
@@ -107,7 +135,7 @@ class ColorPicker {
 		this.preview_container = newElement("", ["color-preview-container"]);
 		this.preview = createChild(this.preview_container, "color-preview");
 		this.preview.addEventListener("click", (e) => {
-      o.addSwatches(o.color);
+      addGlobalSwatches(o.color);
     });
 		this.value_input = newElement("", ["value-input"]);
 		this.value_input.contentEditable = true;
@@ -131,7 +159,14 @@ class ColorPicker {
     
 		this.container.appendChild(this.preview_container);
 		this.updateValues();
+    addPicker(this);
 	}
+
+  destruct() {
+    let l = pickers.length;
+    pickers = pickers.filter((p) => p !== this);
+    //console.log(`was ${l} pickers, now ${pickers.length}`);
+  }
 
 	updateHSV() {
 		this.sliders.hue.setValue(Math.round(this.hsv[0]*360));
@@ -213,8 +248,12 @@ class ColorPicker {
       let swatch = newElement("", ["swatch"]);
       swatch.style.backgroundColor = s;
       swatch.addEventListener("click", (e) => {
-        o.setValue(s);
-        if (s !== o.color && o.callback) o.callback(o);
+        o.rgb = stringToColor(s);
+        o.cmy = RGBToCMY(o.rgb);
+        o.hsv = RGBToHSV(o.rgb);
+        let c = o.color
+        o.updateValues();
+        if (o.color !== c && o.callback) o.callback(o);
       });
       this.swatch_container.appendChild(swatch);
     }
