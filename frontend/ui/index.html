@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<head>
+	<title>Prismatic</title>
+	<link rel="stylesheet" href="/css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div class="menubar" id="main-menu">
+		<div class="flex-start">
+      <!--<div class="menubar-text">Prismatic</div>-->
+			<div class="menubar-seperator"></div>
+			<div class="menubar-tab active" id="home">Home</div>
+			<div class="menubar-tab" id="advanced">Advanced</div>
+      <div class="menubar-tab hidden" id="controller">Controller</div>
+		</div>
+		<div class="flex-end">
+			<div class="menubar-button clear-button">CLEAR</div>
+			<div class="menubar-status connection-status">Connecting<div class='status-prog'></div></div>
+		</div>
+	</div>
+  <!-- Home view -->
+	<div class="page-body flex" id="home-body"></div>
+
+  <!-- Advanced view -->
+	<div class="page-body grid hidden" id="advanced-body">
+    <div class="gap grid grid-a advanced-inputs">
+      <div class="grid grid-b">
+        <div class="input-container grid" id="d-input-container"></div>
+      </div>
+      <div class="grid gap scene-menu">
+        <div class="with-label grid js-start">
+          <div class="with-label-label">Scene name:</div>
+          <div class="value-input text-input" contenteditable="true" id="i-scene-name">Scene name</div>
+        </div>
+        <div class="with-label grid js-start">
+          <div class="with-label-label">Transition time:</div>
+          <div class="value-input text-input" contenteditable="true" id="i-transition-time">1</div>
+        </div>
+        <div class="button js-end" id="b-save-scene">Save scene</div>
+      </div>
+    </div>
+    <div class="grid-b">
+      <div class="flex select-menu grid-a">
+        <div id="l-selected-count">Selected: 0</div>
+        <div class="grid select-buttons-container">
+          <div class="button" id="b-select-all">Select all</div>
+          <div class="button" id="b-deselect-all">Deselect all</div>
+          <div class="button" id="b-invert-selection">Invert selection</div>
+        </div>
+      </div>
+      <div class="fixture-select-container" id="d-fixture-select-container"></div>
+    </div>
+  </div>
+
+  <!-- Controller view -->
+  <div class="page-body hidden grid-column" id="controller-body">
+    <div class="controller-fixture-select-container" id="d-controller-fixture-container"></div>
+    <div class="" id="d-controller-info"></div>
+  </div>
+</body>
+<footer></footer>
+<script type="module" src="./js"></script>

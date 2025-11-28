@@ -1,0 +1,13 @@
+[Unit]
+Description=Prismatic: light controller
+Documentation=https://github.com/DanielGrenehed/Prismatic
+After=netrwork.target
+
+[Service]
+Type=simple
+User=USER
+ExecStart=NODE INDEX
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

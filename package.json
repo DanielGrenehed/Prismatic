@@ -1,0 +1,17 @@
+{
+  "name": "Prismatic",
+  "version": "1.0.0",
+  "description": "Artnet light controller",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniel Grenehed",
+  "license": "ISC",
+  "dependencies": {
+    "artnet": "^1.4.0",
+    "sqlite3": "^5.1.6",
+    "ws": "^8.14.2"
+  }
+}

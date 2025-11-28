@@ -1,0 +1,76 @@
+import {refreshUI} from './ui';
+let multiverse = {};
+let change_callbacks = [];
+
+function getUniverse(i) {
+	if (!multiverse.hasOwnProperty(i)) {
+		multiverse[i] = createSubverse(i, 0, new Array(512).fill(0));
+	}
+	return multiverse[i];
+}
+
+function updateMultiverse(subverses, skip_cb=false) {
+	let updated = [];
+  subverses.forEach((verse) => {
+		let uni = getUniverse(verse.universe);
+		let start = verse.start;
+		for (let j = 0; j < verse.data.length; j++) {
+			if (uni.data[start+j] != verse.data[j]) {
+				uni.data[start+j] = verse.data[j];
+				if (!updated.includes(uni.universe)) {
+					updated.push(uni.universe);
+				}
+			}
+		}	
+		multiverse[uni.universe] = uni;
+	});
+	
+  //console.log("multiverse, updated:", updated.length);
+  if (!skip_cb) {
+    for (let i in multiverse) {
+      let uni = multiverse[i];
+      for (let callback of change_callbacks) {
+        callback(uni);
+      }
+    } 
+  }
+	return updated.length != 0;
+}
+
+function addMultiverseChangeCallback(callback) {
+	change_callbacks.push(callback);
+}
+
+function removeMultiverseChangeCallback(callback) {
+	change_callbacks = change_callbacks.filter(e => e != callback);
+}
+
+function _filterData(data) {
+	for (let i = 0; i < data.length; i++) {
+		data[i] = Math.max(Math.min(Math.round(data[i]), 255), 0);
+	}
+	return data;
+}
+
+class Subverse {
+	constructor(universe, start, data) {
+		this.universe = universe;
+		this.start = start;
+		this.data = _filterData(data);
+	}
+	lastIndex() {
+		return this.start + this.data.length - 1;
+	}
+	intersects(otherverse) {
+		if (otherverse.universe != this.universe) return false;
+		if (otherverse.lastIndex() < this.start) return false;
+		if (otherverse.start > this.lastIndex()) return false;
+		return true;
+	}
+}
+
+function createSubverse(universe, start, data) {
+	return new Subverse(universe, start, data);;
+}
+
+export {createSubverse, Subverse, updateMultiverse, addMultiverseChangeCallback, removeMultiverseChangeCallback, getUniverse};

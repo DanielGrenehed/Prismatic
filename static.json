@@ -1,0 +1,22 @@
+{
+	"/index":	{"path":"frontend/ui/index.html",		"Content-Type":"text/html"},
+	"/js":		{"path":"frontend/index.js",			"Content-Type":"text/javascript"},
+	"/css":		{"path":"frontend/ui/style.css",		"Content-Type":"text/css"},
+	"/slider":	{"path":"frontend/ui/slider.js",		"Content-Type":"text/javascript"},
+	"/colorPicker":	{"path":"frontend/ui/color_picker.js",		"Content-Type":"text/javascript"},
+	"/colorUtil":	{"path":"frontend/color_util.js",		"Content-Type":"text/javascript"},
+  "/updater": {"path":"frontend/updater.js", "Content-Type":"text/javascript"},
+	"/elementUtil":	{"path":"frontend/ui/element_util.js",		"Content-Type":"text/javascript"},
+	"/advancedView":{"path":"frontend/ui/advanced_view.js", 	"Content-Type":"text/javascript"},
+  "/controller": {"path":"frontend/ui/controller.js", "Content-Type":"text/javascript"},
+  "/ui": {"path":"frontend/ui/ui.js", "Content-Type":"text/javascript"},
+	"/math":	{"path":"frontend/math.js",			"Content-Type":"text/javascript"},
+	"/ws":		{"path":"frontend/websocket.js",		"Content-Type":"text/javascript"},
+	"/universe":	{"path":"frontend/domain/universe.js",		"Content-Type":"text/javascript"},
+	"/fixtures":	{"path":"frontend/domain/fixtures.js",		"Content-Type":"text/javascript"},
+	"/groups":	{"path":"frontend/domain/groups.js",		"Content-Type":"text/javascript"},
+	"/inputs":	{"path":"frontend/domain/inputs.js",		"Content-Type":"text/javascript"},
+	"/scenes":	{"path":"frontend/domain/scenes.js",		"Content-Type":"text/javascript"},
+	"/favicon.ico": {"content":"", "Content-Type":"image/x-icon"}
+}
+
