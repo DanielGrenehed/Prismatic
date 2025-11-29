@@ -285,17 +285,25 @@ function createFixtureUI(fixture, cb, long_press_cb=null) {
     }
 	});
   if (long_press_cb) {
+    const blockContextMenu = (e) => {e.preventDefault();};
     sc.touch_timer = null;
     sc.addEventListener("touchstart", (e) => {
-      if (sc.touch_timer) clearTimeout(sc.touch_timer);
+      clearTimeout(sc.touch_timer);
+      sc.addEventListener("contextmenu", blockContextMenu);
       sc.touch_timer = setTimeout(() => {
         long_press_cb(fixture);
       }, 500);
     });
     sc.addEventListener("touchend", (e) => {
-      if (!sc.touch_timer) return;
       clearTimeout(sc.touch_timer);
       sc.touch_timer = null;
+      sc.removeEventListener("contextmenu", blockContextMenu);
+    });
+    sc.addEventListener("touchcancel", (e) => {
+      clearTimeout(sc.touch_timer); 
+    });
+    sc.addEventListener("touchmove", (e) => {
+      clearTimeout(sc.touch_timer);
     });
   }
 	sc.setSelected = (selected) => {
