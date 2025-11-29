@@ -33,6 +33,7 @@ class Slider {
 
     function sc(e) {o.scroll_callback(e);}
     this.slider.addEventListener("scroll", sc);
+    this.slider.addEventListener("wheel", sc);
 
 		this.value_input.addEventListener("keydown", (evt) => {
 			if (evt.keyCode === 13) {
@@ -126,8 +127,10 @@ class Slider {
 	}
 
   scroll_callback(evt) {
-    console.log("Slider scrolled! evt:", evt);
-
+    //console.log("Slider scrolled! evt:", evt);
+    let delta = -(evt.deltaY/(100 / (evt.shiftKey ? 3 : 1)) );
+    this.setValue(this.value+delta);
+    if (this.callback) this.callback(this.value);
     evt.preventDefault();
   }
 }
