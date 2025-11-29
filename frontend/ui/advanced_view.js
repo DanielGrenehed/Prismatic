@@ -222,7 +222,15 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 	};
 
   fixtures.forEach((f) => {
-    let ui = createFixtureUI(f, advanced.updateView);
+    let ui = createFixtureUI(f, advanced.updateView, (fixture) => {
+      let selected = !fixture.selected;
+      advanced.ui_elements.forEach((ui) => {
+        if (ui?.fixture?.model === fixture.model) {
+            ui.setSelected(selected);
+        }
+      });
+      advanced.updateView();
+    });
     if (previously_selected && previously_selected.length > 0) {
       previously_selected.forEach((fs, i) => {
         if (fs.isSameFixture(f)) {

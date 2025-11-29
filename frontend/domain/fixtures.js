@@ -264,7 +264,7 @@ class Fixture {
   }
 }
 
-function createFixtureUI(fixture, cb) {
+function createFixtureUI(fixture, cb, long_press_cb=null) {
   //if (fixture.ui) return fixture.ui;
 	fixture.selected = false;
 	let f_container = newElement("",["fixture-container"]);
@@ -276,10 +276,28 @@ function createFixtureUI(fixture, cb) {
 	f_container.appendChild(fmde);
   let sc = newElement("", ["fixture-colored-border"]);
   sc.appendChild(f_container);
-	sc.addEventListener('click', () => {
-    sc.setSelected(!fixture.selected);
-		cb(fixture);
+	sc.addEventListener('click', (e) => {
+    if (e.ctrlKey) {
+      if (long_press_cb) long_press_cb(fixture);
+    } else {
+      sc.setSelected(!fixture.selected);
+		  cb(fixture);
+    }
 	});
+  if (long_press_cb) {
+    sc.touch_timer = null;
+    sc.addEventListener("touchstart", (e) => {
+      if (sc.touch_timer) clearTimeout(sc.touch_timer);
+      sc.touch_timer = setTimeout(() => {
+        long_press_cb(fixture);
+      }, 500);
+    });
+    sc.addEventListener("touchend", (e) => {
+      if (!sc.touch_timer) return;
+      clearTimeout(sc.touch_timer);
+      sc.touch_timer = null;
+    });
+  }
 	sc.setSelected = (selected) => {
 		fixture.selected = selected;
 		if (selected) {
