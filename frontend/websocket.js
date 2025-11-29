@@ -63,7 +63,7 @@ function createWS(host, onMessageCallback, status_elements) {
 	
 	ws.send = (msg) => {
 		if (ws.socket.readyState == 1) {
-			ws.socket.send(typeof(msg) == "string" ? msg : JSON.stringify(msg));
+			ws.socket.send(typeof(msg) === "string" ? msg : JSON.stringify(msg));
 		}
 	}
 

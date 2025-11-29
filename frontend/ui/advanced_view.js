@@ -133,7 +133,7 @@ function constructSelectionMenu() {
 function destructColorPicker() {
   let advanced = getMenu('advanced');
   if (advanced.color_picker) {
-    console.log("advanced.color_picker exists:", advanced.color_picker);
+    //console.log("advanced.color_picker exists:", advanced.color_picker);
     advanced.color_picker.destruct();
   }
 }
@@ -199,7 +199,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 					{p:"b",v:rgb[2]}
 				]);
 			});
-      advanced.color_picker.addSwatches(["#ffffff", "#000000"]);
+      //advanced.color_picker.addSwatches(["#ffffff", "#000000"]);
 			advanced.color_picker.container.classList.add("grid-a");
 			input_container.appendChild(advanced.color_picker.container);
 		} else {

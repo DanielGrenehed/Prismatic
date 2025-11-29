@@ -2,25 +2,40 @@ import {Slider} from './slider';
 import {createChild, createTabbedContainer, newElement} from './elementUtil';
 import {HSVToRGB, RGBToHSV, RGBToCMY, CMYToRGB, colorToString, stringToColor, isHexColor} from './colorUtil';
 
+
 let swatches = [];
 
 let pickers = [];
+let on_swatches_callback=(_)=>{};
 
 function __addSwatch(swatch) {
+  if (Array.isArray(swatch)) {
+    swatch.forEach((s) => __addSwatch(s));
+    return;
+  }
   if (!swatches.includes(swatch)) {
     swatches.push(swatch);
   }
 }
 
+function setSwatchWatcher(cb) {
+  on_swatches_callback = cb;
+}
+
+function setGlobalSwatches(s) {
+  swatches = [];
+  __addSwatch(s);
+  pickers.forEach((p) => {
+    p.clearSwatches();
+    p.addSwatches(swatches);
+  });
+}
+
 function addGlobalSwatches(swatch) {
-  pickers = pickers.filter((p) => p);
-  //console.log(`Pickers(${pickers.length}): `, pickers); 
+  let l = swatches.length;
   pickers.forEach((p) => p.addSwatches(swatch));
-  if (Array.isArray(swatch)) {
-    swatch.forEach((s) => __addSwatch(s));
-  } else {
-    __addSwatch(swatch);
-  }
+  __addSwatch(swatch);
+  if (l !== swatches.length && on_swatches_callback) on_swatches_callback(swatches);
 }
 
 function addPicker(picker) {
@@ -259,9 +274,14 @@ class ColorPicker {
     }
   }
 
+  clearSwatches() {
+    this.swatch_container.innerHTML = "";
+    this.swatches = [];
+  }
+
 	redraw() {
 		this.updateValues();
 	}
 }
 
-export {ColorPicker}; 
+export {ColorPicker, setGlobalSwatches, addGlobalSwatches, setSwatchWatcher}; 

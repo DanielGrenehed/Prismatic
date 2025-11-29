@@ -7,6 +7,7 @@ import {InputGroup, createInputUI} from './inputs';
 import {constructSceneView} from './scenes';
 import {constructAdvancedView} from './advancedView';
 import {constructUpdater, stage} from "./updater";
+import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
 import {loadMenu, getMenu, refreshUI} from "./ui";
 
 import * as controller from './controller';
@@ -26,6 +27,8 @@ addMultiverseChangeCallback((universe) => {
   refreshUI();
 });
 
+setSwatchWatcher((swatches) => ws.send({type:"update", swatches:swatches}));
+
 let clear_btns = Array.from(document.getElementsByClassName("clear-button"));
 clear_btns.forEach((b) => b.addEventListener("click", (e) => {ws.send({type:"trigger",trigger:"clear"});}));
 
@@ -41,6 +44,7 @@ function triggerScene(scene) {
 }
 
 function onUpdateMessage(json) {
+  //console.log("Got update:", json);
   let home = getMenu("home");
 	if (json.hasOwnProperty("fixtures")) {
 		fixtures = json.fixtures.map((f) => new Fixture(f));
@@ -71,6 +75,9 @@ function onUpdateMessage(json) {
 	if (json.hasOwnProperty("subverses")) {
 	  updateMultiverse(json.subverses);	
 	}
+  if (json.hasOwnProperty("swatches")) {
+    setGlobalSwatches(json.swatches);
+  }
 }
 
 function onWSMessage(json) {

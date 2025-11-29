@@ -10,7 +10,7 @@ const {updateMultiverse, getMultiverse, addMultiverseChangeCallback, createSubve
 const {loadLighting} = require("./backend/lighting.js");
 const {addArtnetDevices, artnetSend} = require("./backend/artnet.js");
 const {setScene, listScenes, onScene, addOnSceneUpdate, addOnSceneStart} = require("./backend/scenes.js");
-const {dbStoreMultiverse, dbStoreScene, setupDatabase} = require("./backend/db.js");
+const {dbStoreMultiverse, dbStoreScene, setupDatabase, dbStoreValue, dbGetValue} = require("./backend/db.js");
 
 
 const log = labeledLog("index.js");
@@ -20,6 +20,12 @@ addArtnetDevices(config.artnet);
 addMultiverseChangeCallback(artnetSend);
 
 let lighting = loadLighting(config);
+let swatches = [];
+
+function saveSwatches(s) {
+  swatches = s;
+  dbStoreValue("swatches", swatches);
+}
 
 function handleTrigger(json) {
 	if (!json.hasOwnProperty("trigger")) return;
@@ -39,6 +45,7 @@ function handleTrigger(json) {
 }
 
 function onUpdateMessage(json, ws) {
+  //console.log("update:", json);
 	if (json.hasOwnProperty("subverses")) {
 		let subverses = [];
 		for (let v of json.subverses) {
@@ -47,11 +54,18 @@ function onUpdateMessage(json, ws) {
 		updateMultiverse(subverses);
     wsSendAll(json, ws);
 	}
+  if (json.hasOwnProperty("swatches")) {
+    saveSwatches(json.swatches);
+    wsSendAll(json, ws); 
+  }
 }
 
 function onWSMessage(msg, ws) {
 	let json = JSON.parse(msg);
-	if (!json.hasOwnProperty("type")) return;
+	if (!json.hasOwnProperty("type")) {
+    console.log("Message without type:", json);
+    return;
+  }
 	switch (json.type) {
 		case "update":
 			onUpdateMessage(json, ws);
@@ -74,7 +88,8 @@ function currentState() {
 		groups: 	lighting.groups, 
 		inputs: 	lighting.inputs, 
 		scenes:		listScenes(), 
-		subverses:	getMultiverse()
+		subverses:	getMultiverse(),
+    swatches: swatches,
 	};
 }
 
@@ -112,6 +127,18 @@ addOnSceneUpdate((scene) => {
 if (config.hasOwnProperty("database")) {
 	assert(config.database.hasOwnProperty("path"));
 	setupDatabase(__basedir + '/' + config.database.path);
+  dbGetValue("swatches", (row) => {
+    console.log("Swatch callback, row:", row);
+    if (row.name === "swatches" && row.value) {
+      let value = row.value;
+      if (typeof value === "string") value = JSON.parse(value);
+      if (!Array.isArray(value)) {
+        console.log("Trying to get swatches from '", value,"', but it is not an array. Aborting");
+      } else {
+        swatches = value;
+      }
+    }
+  });
 }
 
 

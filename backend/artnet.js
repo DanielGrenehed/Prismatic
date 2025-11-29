@@ -9,18 +9,16 @@ function addArtnetDevices(devices) {
 		log("No ArtNet devices configured");
 		return;
 	}
-	for (let i = 0; i < devices.length; i++) {
-		artnet_devices.push(artnet(devices[i]));
-	}
+  devices.forEach((d) => artnet_devices.push(artnet(d)));
 }
 
 function artnetSend(universe) {
-	if (artnet_devices < 1) {
-		return;
-	}
-	for (let i = 0; i < artnet_devices.length; i++) {
-		artnet_devices[i].set(universe.universe, universe.data, () => {});
-	}
+	if (!artnet_devices || artnet_devices.length < 1) return;
+  artnet_devices.forEach((ad) => 
+    ad.set(universe.universe, universe.data, 
+      (s) => {/*log(s, "Device universe set");*/}
+    )
+  );
 }
 
 module.exports = {addArtnetDevices, artnetSend};
