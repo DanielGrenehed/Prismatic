@@ -564,8 +564,7 @@ outline:1px solid var(--primary);
   position: absolute;
   left: 0;
   top: 0;
-  background-color: #000000;
-  opacity: 0.5;
+  background-color: #232327E0;
 }
 #loader:before {
   content: 'Connecting...';
