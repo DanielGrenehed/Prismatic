@@ -1,4 +1,21 @@
 
+let loader = document.getElementById("loader");
+
+function showLoader(on) {
+  if (on) {
+    loader.classList.add("hidden");
+  } else {
+    loader.classList.remove("hidden");
+  }
+}
+
+const WSState = {
+  0: "Connecting",
+  1: "Connected",
+  2: "Disconnecting",
+  3: "Disconnected",
+};
+
 function createWS(host, onMessageCallback, status_elements) {
 	let ws = {};
 	ws.socket = {"readyState":3}; // 0: Connecting, 1: Open, 2: Closing, 3: Closed
@@ -15,20 +32,22 @@ function createWS(host, onMessageCallback, status_elements) {
 		let str = "";
 		switch (ws.state) {
 			case 0:
-				str = "Connecting<div class='status-prog'></div>"
+				str = "<div class='status-prog'></div>"
 				break;
 			case 1:
-				str = "Connected<div class='status-ok'></div>"
+				str = "<div class='status-ok'></div>"
 				break;
 			case 2:
-				str = "Disconnecting<div class='status-warn'></div>"
+				str = "<div class='status-warn'></div>"
 				break;
 			case 3:
-				str = "Disconnected<div class='status-err'></div>"
+				str = "<div class='status-err'></div>"
 				break;
 			default:
 				console.log("Undefined state", ws.state);
 		}
+    showLoader(ws.state === 1);
+    console.log("Websocket status: ", WSState[ws.state]);
     status_elements.forEach((e) => {e.innerHTML = str;});
 	}
 
@@ -52,12 +71,12 @@ function createWS(host, onMessageCallback, status_elements) {
 		ws.socket.onopen = (v) => {
 			ws.state = 1;
 			ws.updateStatus();
-			console.log(`ws open ${v}`);
+			console.log(`ws open`,v);
 		};
 		ws.socket.onclose = (v) => {
 			ws.state = 3;
 			ws.updateStatus();
-			console.log(`ws close ${v}`);
+			console.log(`ws close`,v);
 		};
 	}
 	
