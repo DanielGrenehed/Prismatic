@@ -45,9 +45,6 @@ class Fixture {
 		this.channel_names = mode.channels;
 		this.channels = new Array(mode.channels.length).fill(0);
 		this.channel_defaults = new Array(mode.channels.length).fill(0);
-		
-		this._subverse_update_callbacks = [];
-		this._channel_update_callbacks = [];
 
 		if (conf.hasOwnProperty("channel_defaults")) {
 			for (let i = 0; i < conf.channel_defaults.length; i++) {
@@ -67,55 +64,6 @@ class Fixture {
 	subverse() {
 		return createSubverse(this.universe, this.address, this.channels);
 	}
-
-	addSubverseUpdateCallback(cb) {
-		this._subverse_update_callbacks.push(cb);
-	}
-
-	removeSubverseUpdateCallback(cb) {
-		this._subverse_update_callbacks = this._subverse_update_callbacks.filter(e => e != cb);
-	}
-
-	addChannelUpdateCallback(cb) {
-		this._channel_update_callbacks.push(cb);
-	}
-
-	removeChannelUpdateCallback(cb) {
-		this._channel_update_callbacks = this._channel_update_callbacks.filter(e => e != cb);
-	}
-	
-	updateFromSubverse(verse) {	
-		const subverse = this.subverse();
-		const clen = subverse.lastIndex();
-		const vlen = verse.lastIndex();
-		if (!subverse.intersects(verse)) return false;
-
-		let updated = 0;
-		let channel_i = 0;
-		let verse_i = 0;
-
-		if (subverse.start > verse.start) {
-			verse_i = subverse.start - verse.start;
-		} else if (subverse.start < verse.start) {
-			channel_i = verse.start - subverse.start;
-		}
-		while (channel_i <= clen && verse_i <= vlen) {
-			if (subverse.data[channel_i] != verse.data[verse_i]) {
-				this.channels[channel_i] = verse.data[verse_i];
-				updated++;
-			}
-			channel_i++;
-			verse_i++;
-		}
-		
-		if (updated != 0) {
-			for (let cb of this._subverse_update_callbacks) {
-				cb(this);
-			}
-		}
-
-		return updated != 0;
-	}
 	
 	updateChannels(values) {
 		let updated = 0;
@@ -131,11 +79,6 @@ class Fixture {
 				}
 			}
 		}
-		if (updated != 0) {
-			for (let cb of this._channel_update_callbacks) {
-				cb(this);
-			}
-		}
 	};
 
 	reset() {
@@ -144,11 +87,6 @@ class Fixture {
 			if (this.channels[i] != this.channel_defaults[i]) {
 				this.channels[i] = this.channel_defaults[i];
 				updated++;
-			}
-		}
-		if (updated != 0) {
-			for (let cb of this._channel_update_callbacks) {
-				cb(this);
 			}
 		}
 	};

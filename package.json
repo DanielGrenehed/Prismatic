@@ -2,9 +2,9 @@
   "name": "Prismatic",
   "version": "1.0.0",
   "description": "Artnet light controller",
-  "main": "index.js",
+  "main": "backend/index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniel Grenehed",

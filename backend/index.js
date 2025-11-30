@@ -1,16 +1,16 @@
 global.__basedir = __dirname;
 const assert = require('assert');
-const {labeledLog} = require('./backend/util.js');
-const {createHTTPServer} = require('./backend/httpserver.js');
-const {wsSendAll, createWSServer, wsNumConnected} = require('./backend/wss.js');
-const config = require("./config.json");
-const static_paths = require("./static.json");
-const {updateMultiverse, getMultiverse, addMultiverseChangeCallback, createSubverse} = require("./backend/universe.js");
+const {labeledLog} = require('./util.js');
+const {createHTTPServer} = require('./httpserver.js');
+const {wsSendAll, createWSServer, wsNumConnected} = require('./wss.js');
+const config = require("./../config.json");
+const static_paths = require("./../static.json");
+const {updateMultiverse, getMultiverse, addMultiverseChangeCallback, createSubverse} = require("./universe.js");
 
-const {loadLighting} = require("./backend/lighting.js");
-const {addArtnetDevices, artnetSend} = require("./backend/artnet.js");
-const {setScene, deleteScene, updateScenes, listScenes} = require("./backend/scenes.js");
-const {dbStoreMultiverse, dbGetMultiverse, dbStoreScene, dbDeleteScene, dbGetScenes, setupDatabase, dbStoreValue, dbGetValue} = require("./backend/db.js");
+const {loadLighting} = require("./lighting.js");
+const {addArtnetDevices, artnetSend} = require("./artnet.js");
+const {setScene, deleteScene, updateScenes, listScenes} = require("./scenes.js");
+const {dbStoreMultiverse, dbGetMultiverse, dbStoreScene, dbDeleteScene, dbGetScenes, setupDatabase, dbStoreValue, dbGetValue} = require("./db.js");
 
 
 const log = labeledLog("index.js");
@@ -118,7 +118,7 @@ addMultiverseChangeCallback((universe) => {
 
 if (config.hasOwnProperty("database")) {
 	assert(config.database.hasOwnProperty("path"));
-	setupDatabase(__basedir + '/' + config.database.path);
+	setupDatabase(__basedir + '/../' + config.database.path);
 
   dbGetValue("swatches", (row) => {
     console.log("Swatch callback, row:", row);

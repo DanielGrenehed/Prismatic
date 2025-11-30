@@ -279,7 +279,7 @@ function createFixtureUI(fixture, cb, long_press_cb=null) {
   let sc = newElement("", ["fixture-colored-border"]);
   sc.appendChild(f_container);
 	sc.addEventListener('click', (e) => {
-    if (e.ctrlKey) {
+    if (e.shiftKey) {
       if (long_press_cb) long_press_cb(fixture);
     } else {
       sc.setSelected(!fixture.selected);

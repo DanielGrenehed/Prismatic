@@ -73,7 +73,7 @@
             "dimmer",
             "strobe",
             "segment_patterns",
-            "segment_pattern_transition_speed",
+            "segment_pattern_speed",
             "color_macro",
             "auto_zoom",
             "auto_pan-tilt"
@@ -91,7 +91,7 @@
           "w",
           "color_temp",
           "segment_patterns",
-          "segment_pattern_transition_speed",
+          "segment_pattern_speed",
           "auto_zoom",
           "auto_pan-tilt"
         ]},
@@ -119,7 +119,7 @@
           "color_temp",
           "color_macro",
           "segment_patterns",
-          "segment_pattern_transition_speed",
+          "segment_pattern_speed",
           "auto_zoom",
           "auto_pan-tilt"
         ]}

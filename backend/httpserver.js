@@ -7,7 +7,7 @@ function createHTTPServer(config, static_paths) {
 
 	for (const [url, obj] of Object.entries(static_paths)) {
 		if (obj.hasOwnProperty("content")) continue;
-		fs.readFile(__basedir + '/' + obj["path"], function(err, content) {
+		fs.readFile(__basedir + '/../' + obj["path"], function(err, content) {
 			if (err) throw err;
 			static_paths[url].content = content.toString();
 		});
