@@ -88,10 +88,7 @@ function onUpdateMessage(json) {
 }
 
 function onWSMessage(json) {
-	if (!json.hasOwnProperty("type")) {
-		return;
-	}
-
+	if (!json.hasOwnProperty("type")) return;
 	switch (json.type) {
 		case "trigger":
       if (json.trigger === "clear") {

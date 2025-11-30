@@ -95,6 +95,7 @@ class ColorPicker {
 			o.hsv[0] = v/360;
       updateFromHSV();
 		});
+    this.sliders.hue.scroll_multiplier = 2.0;
 		this.hsv_container.appendChild(this.sliders.hue.container);
 		this.sliders.hue.slider.classList.add("hue");
 

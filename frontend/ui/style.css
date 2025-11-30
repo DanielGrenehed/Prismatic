@@ -564,7 +564,7 @@ outline:1px solid var(--primary);
   width: 100vw;
   height: 100vh;
   z-index: 1000;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   background-color: #232327E0;
@@ -581,7 +581,7 @@ outline:1px solid var(--primary);
   transform: translate(-50%,-50%);
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1410px) {
 	#advanced-body {
 		grid:"b""a";
 	}

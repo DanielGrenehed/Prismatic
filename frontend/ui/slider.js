@@ -18,6 +18,7 @@ class Slider {
 		this.vertical = vertical;
 		this.max_value = maxValue;
 		this.callback = callback;
+    this.scroll_multiplier = 1.0;
 		
 		let o = this;
 		function tc(e) {o.touch_callback(e);}
@@ -125,8 +126,12 @@ class Slider {
 	}
 
   scroll_callback(evt) {
-    //console.log("Slider scrolled! evt:", evt);
-    let delta = -(evt.deltaY/(100 / (evt.shiftKey ? 3 : 1)) );
+    let d = -evt.deltaY;
+    if (d === 0) return;
+    if (d < 0) d = -1;
+    if (d > 0) d = 1;
+    d *= this.scroll_multiplier;
+    let delta = d * (evt.shiftKey ? 3 : 1);
     this.setValue(this.value+delta);
     if (this.callback) this.callback(this.value);
     evt.preventDefault();
