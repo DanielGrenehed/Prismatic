@@ -10,7 +10,7 @@ const {updateMultiverse, getMultiverse, addMultiverseChangeCallback, createSubve
 const {loadLighting} = require("./backend/lighting.js");
 const {addArtnetDevices, artnetSend} = require("./backend/artnet.js");
 const {setScene, deleteScene, updateScenes, listScenes} = require("./backend/scenes.js");
-const {dbStoreMultiverse, dbStoreScene, dbDeleteScene, dbGetScenes, setupDatabase, dbStoreValue, dbGetValue} = require("./backend/db.js");
+const {dbStoreMultiverse, dbGetMultiverse, dbStoreScene, dbDeleteScene, dbGetScenes, setupDatabase, dbStoreValue, dbGetValue} = require("./backend/db.js");
 
 
 const log = labeledLog("index.js");
@@ -119,6 +119,7 @@ addMultiverseChangeCallback((universe) => {
 if (config.hasOwnProperty("database")) {
 	assert(config.database.hasOwnProperty("path"));
 	setupDatabase(__basedir + '/' + config.database.path);
+
   dbGetValue("swatches", (row) => {
     console.log("Swatch callback, row:", row);
     if (row.name === "swatches" && row.value) {
@@ -131,12 +132,19 @@ if (config.hasOwnProperty("database")) {
       }
     }
   });
+
   dbGetScenes((row) => {
     setScene({
       name: row.name,
       time: parseFloat(row.time),
       subverses: JSON.parse(row.subverses),
     });
+  });
+
+  dbGetMultiverse((row) => {
+  	let universe = createSubverse(row.universe, 0, JSON.parse(row.data));
+		updateMultiverse([universe]);
+		log(universe, "Found universe");
   });
 }
 
@@ -145,4 +153,6 @@ const http_server = createHTTPServer(config.http_server, static_paths);
 const ws_server = createWSServer(config.ws_server, onNewSocket, onWSMessage);
 
 //setInterval(updateClients,250);
-setInterval(dbStoreMultiverse, 1000);
+setInterval(() => {
+  dbStoreMultiverse(getMultiverse());
+}, 1000);
