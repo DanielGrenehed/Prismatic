@@ -1,5 +1,6 @@
 import {createSubverse} from './universe';
 import {newElement} from './elementUtil';
+import {Types} from './type';
 
 function applyDelta(value, acc, delta) {
   // Accumulate fractional change
@@ -37,6 +38,7 @@ function applyDelta(value, acc, delta) {
 
 class Fixture {
 	constructor(fixture) {
+    this.type = Types.Fixture;
 		this.model = fixture.model;
 		this.mode = fixture.mode;
 		this.universe = fixture.universe;

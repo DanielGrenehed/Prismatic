@@ -9,6 +9,7 @@ import {constructAdvancedView} from './advancedView';
 import {constructUpdater, stage} from "./updater";
 import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
 import {loadMenu, getMenu, refreshUI} from "./ui";
+import {Types} from "./type";
 
 import * as controller from './controller';
 
@@ -33,22 +34,25 @@ let clear_btns = Array.from(document.getElementsByClassName("clear-button"));
 clear_btns.forEach((b) => b.addEventListener("click", (e) => {ws.send({type:"trigger",trigger:"clear"});}));
 
 function triggerScene(scene) {
-  //console.log(`triggering scene '${scene.name}' subverses: `, scene.subverses);
   updateMultiverse(scene.subverses);
-  ws.send({type: "scene",
-    trigger: "start",
-    name: scene.name,
-    time: scene.time,
-    subverses: scene.subverses
-  }); 
+  stage(scene);
+}
+
+function newScene(scene) {
+  scenes.push(scene);
+  ws.send({type:"update",scenes:scenes});
+}
+
+function deleteScene(scene) {
+  scenes = scenes.filter((s) => s!==scene);
+  ws.send({type:"update",scenes:scenes});
 }
 
 function onUpdateMessage(json) {
-  //console.log("Got update:", json);
   let home = getMenu("home");
 	if (json.hasOwnProperty("fixtures")) {
 		fixtures = json.fixtures.map((f) => new Fixture(f));
-		constructAdvancedView(fixtures, (scene) => {ws.send(scene);});
+		constructAdvancedView(fixtures, newScene);
     controller.constructControllerUI(fixtures);
     constructUpdater(fixtures, ws);
 	}
@@ -56,9 +60,6 @@ function onUpdateMessage(json) {
 		groups = json.groups.map((g) => new Group(g, fixtures));
 	}
 	if (json.hasOwnProperty("inputs")) {
-    home.ui_elements.forEach((i) => {
-      if (i.destruct) i.destruct();
-    });
 		home.body.innerHTML = "";
 		inputs = json.inputs.map((i) => {
       let input = new InputGroup(i, groups);
@@ -72,10 +73,7 @@ function onUpdateMessage(json) {
 		footer.innerHTML = "";
 		constructSceneView(scenes, footer, (e, scene) => {
       if (e.ctrlKey && e.shiftKey) {
-
-        scenes = scenes.filter((s) => s!==scene);
-        console.log("Deleting scene:", scene, "scenes:", scenes);
-        ws.send({type:"update",scenes:scenes});
+        deleteScene(scene)
       } else {
         triggerScene(scene);
       }
@@ -101,9 +99,9 @@ function onWSMessage(json) {
           f.reset();
           return f.subverse();
         }));
+      } else {
+        console.log("Unknown trigger:", json.trigger);
       }
-			break;
-		case "scene":
 			break;
 		case "update":
 			onUpdateMessage(json);

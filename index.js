@@ -9,7 +9,7 @@ const {updateMultiverse, getMultiverse, addMultiverseChangeCallback, createSubve
 
 const {loadLighting} = require("./backend/lighting.js");
 const {addArtnetDevices, artnetSend} = require("./backend/artnet.js");
-const {setScene, deleteScene, updateScenes, listScenes, onScene, addOnSceneUpdate, addOnSceneStart} = require("./backend/scenes.js");
+const {setScene, deleteScene, updateScenes, listScenes} = require("./backend/scenes.js");
 const {dbStoreMultiverse, dbStoreScene, dbDeleteScene, dbGetScenes, setupDatabase, dbStoreValue, dbGetValue} = require("./backend/db.js");
 
 
@@ -52,10 +52,7 @@ function handleScenesUpdate(scenes) {
 
 function onUpdateMessage(json, ws) {
 	if (json.hasOwnProperty("subverses")) {
-		let subverses = [];
-		for (let v of json.subverses) {
-			subverses.push(createSubverse(v.universe, v.start, v.data));
-		}
+		let subverses = json.subverses.map((v) => createSubverse(v.universe, v.start, v.data));
 		updateMultiverse(subverses);
     wsSendAll(json, ws);
 	}
@@ -80,9 +77,6 @@ function onWSMessage(msg, ws) {
 			break;
 		case "trigger":
 			handleTrigger(json);
-			break;
-		case "scene":
-			onScene(json);
 			break;
 		default:
 			console.log("Unknown type: " + json.type);
@@ -120,20 +114,6 @@ addMultiverseChangeCallback((universe) => {
 		type:"update",
 		subverses:[universe]
 	});
-});
-
-addOnSceneStart((scene) => {
-	updateMultiverse(scene.subverses);
-});
-
-addOnSceneUpdate((scene) => {
-	setScene(scene);
-  if (scene.hasOwnProperty("delete") && scene.delete) {
-    dbDeleteScene(scene);
-  } else {
-	  dbStoreScene(scene);
-  }
-	wsSendAll({type:"update", scenes:listScenes()});
 });
 
 if (config.hasOwnProperty("database")) {

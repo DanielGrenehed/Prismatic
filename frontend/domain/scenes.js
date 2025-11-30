@@ -1,7 +1,9 @@
 import {newElement} from './elementUtil';
+import {Types} from './type';
 
 function constructSceneView(scenes, _parent, scene_callback) {
   scenes.forEach((scene) => {
+    scene.type = Types.Scene;
 		let s_cont = newElement("", ["grid", "scene-container", "button"]);
 		let s_name = newElement(scene.name, ["lrpad"]);
 		s_cont.appendChild(s_name);

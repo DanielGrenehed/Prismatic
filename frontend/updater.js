@@ -1,5 +1,6 @@
 import {updateMultiverse} from './universe';
 import {refreshUI} from './ui';
+import {Types} from './type';
 
 let ws = null; 
 let staged = [];
@@ -23,15 +24,23 @@ const interval = setInterval(function() {
   if (ws) {
     if (staged.length > 0) {
       let subverses = [];
-      staged.forEach((f) => {
-        if (f.hasUpdates()) {
-          f.getSubverseUpdates().forEach((s) => {
-            subverses.push(s);
-          });
-        } else {
-          //console.log("No update, sending whole fixture subverse");
-          //subverses.push(f.subverse());
-        } 
+      staged.forEach((s) => {
+        
+        switch (s.type) {
+          case Types.Fixture: 
+            if (s.hasUpdates()) {
+              s.getSubverseUpdates().forEach((sub) => subverses.push(sub));
+            } else {
+              //console.log("No update, sending whole fixture subverse");
+              //subverses.push(f.subverse());
+            }
+            break;
+          case Types.Scene:
+            s.subverses.forEach((sub) => subverses.push(sub));
+            break;
+          default:
+            console.log("Updater: Unknown type: ", s.type);
+        }
       });
       try {
         updateMultiverse(subverses, true);
