@@ -292,7 +292,7 @@ function createFixtureUI(fixture, cb, long_press_cb=null) {
       sc.addEventListener("contextmenu", blockContextMenu);
       sc.touch_timer = setTimeout(() => {
         long_press_cb(fixture);
-      }, 500);
+      }, 700);
     });
     sc.addEventListener("touchend", (e) => {
       clearTimeout(sc.touch_timer);

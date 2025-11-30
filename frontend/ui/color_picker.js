@@ -22,8 +22,13 @@ function setSwatchWatcher(cb) {
   on_swatches_callback = cb;
 }
 
+function handlePickers() {
+  pickers = pickers.filter((p) => p.container.isConnected);
+}
+
 function setGlobalSwatches(s) {
   swatches = [];
+  handlePickers();
   __addSwatch(s);
   pickers.forEach((p) => {
     p.clearSwatches();
@@ -31,8 +36,19 @@ function setGlobalSwatches(s) {
   });
 }
 
+function removeGlobalSwatches(s) {
+  if (!Array.isArray(s)) s = [s];
+  swatches = swatches.filter((clr) => !s.includes(clr));
+  pickers.forEach((p) => {
+    p.clearSwatches();
+    p.addSwatches(swatches);
+  });
+  if (on_swatches_callback) on_swatches_callback(swatches);
+}
+
 function addGlobalSwatches(swatch) {
   let l = swatches.length;
+  handlePickers();
   pickers.forEach((p) => p.addSwatches(swatch));
   __addSwatch(swatch);
   if (l !== swatches.length && on_swatches_callback) on_swatches_callback(swatches);
@@ -177,12 +193,6 @@ class ColorPicker {
     addPicker(this);
 	}
 
-  destruct() {
-    let l = pickers.length;
-    pickers = pickers.filter((p) => p !== this);
-    //console.log(`was ${l} pickers, now ${pickers.length}`);
-  }
-
 	updateHSV() {
 		this.sliders.hue.setValue(Math.round(this.hsv[0]*360));
 		this.sliders.sat.setValue(Math.round(this.hsv[1]*100));
@@ -263,6 +273,10 @@ class ColorPicker {
       let swatch = newElement("", ["swatch"]);
       swatch.style.backgroundColor = s;
       swatch.addEventListener("click", (e) => {
+        if (e.ctrlKey && e.shiftKey) {
+          removeGlobalSwatches(s);
+          return;
+        }
         o.rgb = stringToColor(s);
         o.cmy = RGBToCMY(o.rgb);
         o.hsv = RGBToHSV(o.rgb);

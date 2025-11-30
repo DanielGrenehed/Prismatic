@@ -12,7 +12,7 @@ function constructSceneView(scenes, _parent, scene_callback) {
 		let s_time = newElement(scene.time + "s", ["lrpad"]);
 		s_cont.appendChild(s_time);
 
-		s_cont.addEventListener('click', () => scene_callback(scene));
+		s_cont.addEventListener('click', (e) => scene_callback(e, scene));
 		_parent.appendChild(s_cont);
 	});
   console.log("scenes:", scenes);

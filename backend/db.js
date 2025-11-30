@@ -1,17 +1,16 @@
 const {getMultiverse, updateMultiverse, createSubverse} = require("./universe.js");
-const {setScene} = require("./scenes.js");
 const {labeledLog} = require("./util.js");
 const log = labeledLog("db.js");
 
 let db = null;
 
 function dbStoreMultiverse() {
-	if (db == null) return;
+	if (!db) return;
 	for (let universe of getMultiverse()) {
 		db.run("INSERT OR REPLACE INTO universes(universe, data) VALUES (?,?);",
 			[universe.universe, JSON.stringify(universe.data)],
 			(err, row) => {
-				if (err != null) {
+				if (err) {
 					log(err);
 				}
 			});
@@ -19,14 +18,36 @@ function dbStoreMultiverse() {
 }
 
 function dbStoreScene(scene) {
-	if (db == null) return;
+	if (!db) return;
 	db.run("INSERT OR REPLACE INTO scenes(name, time, subverses) VALUES (?,?,?);",
 		[scene.name, scene.time, JSON.stringify(scene.subverses)],
 		(err, row) => {
-			if (err != null) {
+			if (err) {
 				log(err);
 			}
 		});
+}
+
+function dbDeleteScene(scene) {
+  if (!db) return;
+  db.run("DELETE FROM scenes WHERE name=?", [scene.name], (err, row) => {
+    if (err) {
+      log(err, "tried to delete scene");
+    } else {
+      log(row, "scene deleted");
+    }
+  });
+}
+
+function dbGetScenes(callback) {
+  if (!db) return;
+	db.each("SELECT * FROM scenes;", (err, row) => {
+		if (err) {
+			log(err, "Error selecting from scenes");
+			return;
+		}
+    callback(row);
+	});
 }
 
 function dbStoreValue(name, value) {
@@ -73,17 +94,6 @@ function setupDatabase(file) {
 		log(universe, "Found universe");
 	});
 
-	db.each("SELECT * FROM scenes;", (err, row) => {
-		if (err) {
-			log(err, "Error selecting from scenes");
-			return;
-		}
-		setScene({
-			name:row.name, 
-			time:parseFloat(row.time), 
-			subverses:JSON.parse(row.subverses)
-		});	
-	});
 }
 
-module.exports = {dbStoreMultiverse, dbStoreScene, dbStoreValue, dbGetValue, setupDatabase};
+module.exports = {dbStoreMultiverse, dbStoreScene, dbGetScenes, dbStoreValue, dbDeleteScene, dbGetValue, setupDatabase};

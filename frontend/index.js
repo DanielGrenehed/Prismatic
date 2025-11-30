@@ -33,7 +33,7 @@ let clear_btns = Array.from(document.getElementsByClassName("clear-button"));
 clear_btns.forEach((b) => b.addEventListener("click", (e) => {ws.send({type:"trigger",trigger:"clear"});}));
 
 function triggerScene(scene) {
-  console.log(`triggering scene '${scene.name}' subverses: `, scene.subverses);
+  //console.log(`triggering scene '${scene.name}' subverses: `, scene.subverses);
   updateMultiverse(scene.subverses);
   ws.send({type: "scene",
     trigger: "start",
@@ -70,7 +70,16 @@ function onUpdateMessage(json) {
 		scenes = json.scenes.map((scene) => scene);
 		let footer = document.getElementsByTagName("footer")[0];
 		footer.innerHTML = "";
-		constructSceneView(scenes, footer, triggerScene);
+		constructSceneView(scenes, footer, (e, scene) => {
+      if (e.ctrlKey && e.shiftKey) {
+
+        scenes = scenes.filter((s) => s!==scene);
+        console.log("Deleting scene:", scene, "scenes:", scenes);
+        ws.send({type:"update",scenes:scenes});
+      } else {
+        triggerScene(scene);
+      }
+    });
 	}
 	if (json.hasOwnProperty("subverses")) {
 	  updateMultiverse(json.subverses);	

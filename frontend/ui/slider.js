@@ -44,8 +44,6 @@ class Slider {
 					this.setValue(v);
 					this.callback(v);
 				}
-			} else {
-				console.log(evt);
 			}
 		});
 
