@@ -2,7 +2,7 @@
 
 service=$(cat prismatic.service)
 directory=`pwd`
-index=$(echo "$directory/index.js")
+index=$(echo "$directory/backend/index.js")
 user=$(echo "root")
 node=$(which node)
 
