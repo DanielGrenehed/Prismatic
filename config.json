@@ -22,7 +22,7 @@
 			"model":"opti_tri_30",
 			"mode":"3ch",
 			"universe":1,
-			"addresses":[20,23,26,29]
+			"addresses":[440, 443, 446, 449]
 		},
 		{
 			"model":"colorband_tri",
@@ -56,7 +56,7 @@
 	"unused_fixtures": [],
 	"groups":[
 		{"name":"color_leds", "universes":[{"universe":1,"fixtures":[
-			16,20,23,26,29,32,68,104,140,176,212,312,338,364,379,394,409,424
+			16,440,443,446,449,32,68,104,140,176,212,312,338,364,379,394,409,424
       ]}]},
 		{"name":"front", "universes":[{"universe":1,"fixtures":[0, 2, 4, 6, 8, 10, 12, 14]}]},
 		{"name":"kors", "universes":[{"universe":1,"fixtures":[16]}]}
