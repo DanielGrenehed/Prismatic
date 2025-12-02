@@ -476,6 +476,12 @@ outline:1px solid var(--primary);
   white-space: nowrap;
 }
 
+#d-filter-toggle-header {
+  padding-top:1.5ch;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
 .button {	
 	user-select:none;
 	padding: var(--padding);

@@ -5,6 +5,7 @@ import {ColorPicker} from './colorPicker';
 import {stage} from './updater';
 import {refreshUI, getMenu} from './ui';
 import {updateMultiverse} from './universe';
+import {CMYToRGB, RGBToCMY} from './colorUtil';
 
 function getUnifiedChannels(channels, fixtures) {
 		let channel_values = [];
@@ -143,13 +144,21 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
     fine: {active: false, element:document.getElementById("t-cf-fine")},
   };
   
-  Object.entries(toggles).forEach(([_, obj]) => {
-    obj.element.addEventListener("click", (e) => {
-      obj.element.classList.toggle("toggled");
-      obj.active = obj.element.classList.contains("toggled");
+  Object.entries(toggles).forEach(([_, t]) => {
+    t.element.addEventListener("click", (e) => {
+      t.element.classList.toggle("toggled");
+      t.active = t.element.classList.contains("toggled");
       advanced.updateView();
     });
-    obj.active = obj.element.classList.contains("toggled");
+    t.active = t.element.classList.contains("toggled");
+  });
+
+  document.getElementById("b-cf-clear").addEventListener("click", (e) => {
+    Object.entries(toggles).forEach(([_, t]) => {
+      t.element.classList.remove("toggled");
+      t.active = false;
+    });
+    advanced.updateView();
   });
 
   const addSlider = (channel, parent) => {
@@ -184,7 +193,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 		}
     if (advanced.cmy_picker != null) {
       let cmy = getUnifiedChannels(["c","m","y"], advanced.selected_fixtures);
-      advanced.cmy_picker.setCMY(cmy[0]);
+      advanced.cmy_picker.setRGB(CMYToRGB(cmy[0]));
     }
     advanced.sliders.forEach((s) => {
       let v = getUnifiedChannels([s.channel], advanced.selected_fixtures);
@@ -256,7 +265,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 
     if (["c","m","y"].every(v => channels.includes(v))) {
       advanced.cmy_picker = new ColorPicker((cp) => {
-        let cmy = cp.cmy;
+        let cmy = RGBToCMY(cp.rgb);
         updateFixtures([
           {p:"c",v:cmy[0]},
           {p:"m",v:cmy[1]},
