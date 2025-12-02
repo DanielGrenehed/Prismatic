@@ -272,7 +272,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
       advanced.cmy_picker = null;
     }
 
-		let sliders_c = newElement("", ["grid-b","grid","gap","grid-col","grid-a-row"]);
+		let sliders_c = newElement("", ["grid-b","flex-column", "gap"]);
 
     
     channels = channels.filter((c) => {
