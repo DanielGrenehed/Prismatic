@@ -269,8 +269,8 @@ class Fixture {
 function createFixtureUI(fixture, cb, long_press_cb=null) {
   //if (fixture.ui) return fixture.ui;
 	fixture.selected = false;
-	let f_container = newElement("",["fixture-container"]);
-	let fadd = newElement(fixture.address, ["fixture-address"]);
+	let f_container = newElement("",["fixture-container","pointer"]);
+	let fadd = newElement(fixture.address+1, ["fixture-address"]);
 	let fmod = newElement(fixture.model, ["fixture-model"]);
 	let fmde = newElement(fixture.mode, ["fixture-mode"]);
 	f_container.appendChild(fadd);

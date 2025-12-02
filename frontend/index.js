@@ -74,6 +74,8 @@ function onUpdateMessage(json) {
 		constructSceneView(scenes, footer, (e, scene) => {
       if (e.ctrlKey && e.shiftKey) {
         deleteScene(scene)
+      } else if (e.ctrlKey) {
+        console.log("Ctrl-click on scene:", scene);
       } else {
         triggerScene(scene);
       }
