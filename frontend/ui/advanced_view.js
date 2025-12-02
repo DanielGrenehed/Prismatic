@@ -198,7 +198,11 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 		}
     if (advanced.cmy_picker != null) {
       let cmy = getUnifiedChannels(["c","m","y"], advanced.selected_fixtures);
-      advanced.cmy_picker.setRGB(CMYToRGB(cmy[0]));
+      if (cmy && cmy.length > 0) {
+        advanced.cmy_picker.setRGB(CMYToRGB(cmy[0]));
+      } else {
+        console.log("Trying to get unified cmy channels failed, cmy:", cmy);
+      }
     }
     advanced.sliders.forEach((s) => {
       let v = getUnifiedChannels([s.channel], advanced.selected_fixtures);
