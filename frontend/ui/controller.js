@@ -106,11 +106,17 @@ function createGamepadUI(gamepad) {
       case 4:
       case 14:
         if (pressed) views[id].prev();
-        break
+        break;
       case 5:
       case 15:
         if (pressed) views[id].next();
-        break
+        break;
+      case 12:
+        if (pressed) views[id].prev(3);
+        break;
+      case 13:
+        if (pressed) views[id].next(3);
+        break;
     }
   };
   view.old_controller = gamepad.axes.length <= 6;
@@ -184,11 +190,11 @@ function createGamepadUI(gamepad) {
       view.redraw();
     });
   };
-  view.next = () => {
-    view.select(view.selected+1);
+  view.next = (n=1) => {
+    view.select(view.selected+n);
   };
-  view.prev = () => {
-    view.select(view.selected-1);
+  view.prev = (n=1) => {
+    view.select(view.selected-n);
   };
   view.unselect = () => {
     view.getSelected().fixture_ui.removeColor(view.color);

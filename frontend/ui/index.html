@@ -27,7 +27,7 @@
 	<div class="page-body grid hidden" id="advanced-body">
     <div class="gap grid grid-a advanced-inputs">
       <div class="grid grid-b">
-        <div class="input-container grid" id="d-input-container"></div>
+        <div class="input-container grid gap-2" id="d-input-container"></div>
       </div>
       <div class="grid gap scene-menu">
         <div class="with-label grid js-start">
@@ -51,6 +51,16 @@
         </div>
       </div>
       <div class="fixture-select-container" id="d-fixture-select-container"></div>
+      <!-- @TODO add channel filtrations -->
+      <div class="label" style="padding-top:1.5ch">Channel filters</div>
+      <div class="flex gap-1 padded filter-toggle-container">
+        <div class="toggle" id="t-cf-color">Color</div>
+        <div class="toggle" id="t-cf-sd">Strobe/Dimmer</div>
+        <div class="toggle" id="t-cf-pos">Position</div>
+        <div class="toggle" id="t-cf-zf">Zoom/Focus</div>
+        <div class="toggle" id="t-cf-gobo">Gobo/Prism</div>
+        <div class="toggle" id="t-cf-fine" style="justify-self: end;">Include Fine</div>
+      </div>
     </div>
   </div>
 

@@ -2,6 +2,7 @@ const assert = require("assert");
 const models = require("./fixtures.json");
 const {labeledLog} = require("./util.js");
 const log = labeledLog("lighting.js");
+const {createSubverse} = require("./universe.js");
 
 assert(models.hasOwnProperty("fixture_models"));
 const fxt_mods = models.fixture_models;

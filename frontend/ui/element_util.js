@@ -20,9 +20,10 @@ function floatLineDisplay(label) {
   return container;
 } 
 
-function withLabel(c, label) {
+function withLabel(c, label, horizontal=true, styled=false) {
 	let container = document.createElement("div");
 	container.classList.add("with-label");
+  if (horizontal) container.classList.add("with-label-horizontal");
 	container.classList.add("grid");
 	let le = document.createElement("div");
   container.setLabel = (label) => {
@@ -30,6 +31,10 @@ function withLabel(c, label) {
   }; 
 	container.setLabel(label);
 	le.classList.add("with-label-label");
+  if (styled) {
+    container.classList.add("with-label-styled");
+    le.classList.add("with-label-label-styled");
+  }
 	container.appendChild(le);
 	container.appendChild(c);
 	return container;
@@ -92,6 +97,7 @@ function createTabbedContainer(tabs, callback) {
 	container.tabs = {};
 
 	let on_click = (tab_name) => {
+    if (!tabs.includes(tab_name)) return;
     Object.entries(container.tabs).forEach(([tab, tab_container]) => {
       if (tab === tab_name) {
         container.buttons[tab].classList.add("active");
@@ -134,9 +140,14 @@ function createTabbedContainer(tabs, callback) {
     return tab_container;
   };
 
+  container.openTab = (name) => {
+    on_click(name);
+  };
+
   tabs.forEach((tab) => container.addTab(tab, true));
 
 	on_click(tabs[0]);
+  
 	return container;	
 }
 

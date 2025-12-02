@@ -134,6 +134,31 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
   let advanced = getMenu('advanced');
 	advanced.ui_elements = [];
 
+  let toggles = {
+    color: {active: false, element: document.getElementById("t-cf-color")},
+    strobe_dimmer: {active: false, element: document.getElementById("t-cf-sd")},
+    position: {active: false, element: document.getElementById("t-cf-pos")},
+    gobo: {active: false, element:document.getElementById("t-cf-gobo")},
+    zoom_focus: {active: false, element:document.getElementById("t-cf-zf")},
+    fine: {active: false, element:document.getElementById("t-cf-fine")},
+  };
+  
+  Object.entries(toggles).forEach(([_, obj]) => {
+    obj.element.addEventListener("click", (e) => {
+      obj.element.classList.toggle("toggled");
+      obj.active = obj.element.classList.contains("toggled");
+      advanced.updateView();
+    });
+    obj.active = obj.element.classList.contains("toggled");
+  });
+
+  const addSlider = (channel, parent) => {
+    let s = new Slider(channel, 255, (v) => updateFixtures([{p:channel,v:v}]));
+    parent.appendChild(s.container);
+    s.channel = channel;
+    advanced.sliders.push(s);
+  };
+
   let input_container = document.getElementById("d-input-container");
   input_container.innerHTML = "";
 
@@ -149,14 +174,18 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 	advanced.selected_fixtures = [];
 
 
-	advanced.color_picker = null;
+	advanced.rgb_picker = null;
 	advanced.sliders = [];
 	
 	advanced.redraw = () => {
-		if (advanced.color_picker != null) {
+		if (advanced.rgb_picker != null) {
 			let rgb = getUnifiedChannels(["r","g","b"], advanced.selected_fixtures);
-			advanced.color_picker.setRGB(rgb[0]);
+			advanced.rgb_picker.setRGB(rgb[0]);
 		}
+    if (advanced.cmy_picker != null) {
+      let cmy = getUnifiedChannels(["c","m","y"], advanced.selected_fixtures);
+      advanced.cmy_picker.setCMY(cmy[0]);
+    }
     advanced.sliders.forEach((s) => {
       let v = getUnifiedChannels([s.channel], advanced.selected_fixtures);
       s.setValue(v[0]);
@@ -175,13 +204,40 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
         });
       }
     });
+    let include = [];
+    if (!toggles.fine.active) {
+      channels = channels.filter((c) => !c.includes("fine"));
+    }
+    if (toggles.color.active) {
+      include = include.concat(["r","g","b","c","m","y","w", "fine_c","fine_m","fine_y"])
+        .concat(channels.filter((c) => c.includes("color")));
+    }
+    if (toggles.position.active) {
+      include = include.concat(["pan", "tilt", "fine_pan", "fine_tilt"]);
+    }
+    if (toggles.strobe_dimmer.active) {
+      include = include.concat(["strobe", "dimmer", "fine_strobe", "fine_dimmer"]);
+    }
+    if (toggles.zoom_focus.active) {
+      include = include.concat(["zoom", "focus", "fine_zoom", "fine_focus"]);
+    }
+    if (toggles.gobo.active) {
+      include = include.concat(channels.filter((c) => c.includes("gobo") || c.includes("prism")));
+    }
+    
+    if (include.length > 0) channels = channels.filter((c) => include.includes(c));
+
 
 		input_container.innerHTML = "";
 		updatedSelection(advanced.selected_fixtures.length);
 
+		advanced.sliders = [];
+    let color_column = newElement("", ["grid-a", "flex-column", "gap"]);
+    input_container.appendChild(color_column);
+
 		if (["r","g","b"].every(v => channels.includes(v))) {
       
-			advanced.color_picker = new ColorPicker((cp) => {
+			advanced.rgb_picker = new ColorPicker((cp) => {
 				let rgb = cp.rgb;
 				updateFixtures([
 					{p:"r",v:rgb[0]},
@@ -189,22 +245,46 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 					{p:"b",v:rgb[2]}
 				]);
 			});
-      //advanced.color_picker.addSwatches(["#ffffff", "#000000"]);
-			advanced.color_picker.container.classList.add("grid-a");
-			input_container.appendChild(advanced.color_picker.container);
+			advanced.rgb_picker.container.classList.add("grid-a");
+      advanced.rgb_picker.tabbed_container.openTab("RGB");
+			color_column.appendChild(withLabel(advanced.rgb_picker.container, "Channels: R, G, B", false, true));
+
+		  channels = channels.filter((c) => !["r","g","b", "fine_r","fine_g","fnie_b"].includes(c));
 		} else {
-			advanced.color_picker = null;
+			advanced.rgb_picker = null;
 		}
 
-		let sliders_c = newElement("", ["grid-b","grid","gap","grid-col","grid-a-row"]);
-		channels = channels.filter((c) => !["r","g","b"].includes(c));
+    if (["c","m","y"].every(v => channels.includes(v))) {
+      advanced.cmy_picker = new ColorPicker((cp) => {
+        let cmy = cp.cmy;
+        updateFixtures([
+          {p:"c",v:cmy[0]},
+          {p:"m",v:cmy[1]},
+          {p:"y",v:cmy[2]},
+        ]);
+      });
+      advanced.cmy_picker.container.classList.add("grid-a");
+      advanced.cmy_picker.tabbed_container.openTab("CMY");
+      color_column.appendChild(withLabel(advanced.cmy_picker.container, "Channels: C, M, Y", false, true));
 
-		advanced.sliders = [];
+      channels = channels.filter((c) => !["c","m","y", "fine_c","fine_m","fine_y"].includes(c));
+    } else {
+      advanced.cmy_picker = null;
+    }
+
+		let sliders_c = newElement("", ["grid-b","grid","gap","grid-col","grid-a-row"]);
+
+    
+    channels = channels.filter((c) => {
+      if (c.includes("color") || c === 'w') {
+        addSlider(c, color_column);
+        return false;
+      } 
+      return true;
+    });
+
     channels.forEach((c) => {
-      let s = new Slider(c, 255, (v) => updateFixtures([{p:c,v:v}]));
-      sliders_c.appendChild(s.container);
-      s.channel = c;
-      advanced.sliders.push(s);
+      addSlider(c, sliders_c);
     });
 
 		input_container.appendChild(sliders_c);

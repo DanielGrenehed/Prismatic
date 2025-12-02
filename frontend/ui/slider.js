@@ -28,17 +28,19 @@ class Slider {
 		this.slider.addEventListener("touchmove", tc);
 
 		function mc(e) {o.mouse_callback(e);}
+    this.slider.addEventListener("mouseup", mc);
 		this.slider.addEventListener("mousedown", mc);
 		this.slider.addEventListener("mousemove", mc);
+    this.slider.addEventListener("mouseleave", mc);
 		this.slider.addEventListener("click", mc);
 
     function sc(e) {o.scroll_callback(e);}
     this.slider.addEventListener("scroll", sc);
     this.slider.addEventListener("wheel", sc);
 
-		this.value_input.addEventListener("keydown", (evt) => {
-			if (evt.keyCode === 13) {
-				evt.preventDefault()
+		this.value_input.addEventListener("keydown", (e) => {
+			if (e.keyCode === 13) {
+				e.preventDefault()
 				let v = parseInt(this.value_input.innerHTML);
 				if (v != undefined) {
 					v = squish(0, this.max_value, v);
@@ -100,10 +102,10 @@ class Slider {
 		//this.updateValues();
 	}
 
-	touch_callback(evt) {
-		evt.preventDefault();
-		if (evt.targetTouches.length > 0) {
-			let t = evt.targetTouches[0];
+	touch_callback(e) {
+		e.preventDefault();
+		if (e.targetTouches.length > 0) {
+			let t = e.targetTouches[0];
 
 			let b = this.slider.getBoundingClientRect();
 			let pos = this.vertical ? t.clientY - b.top : t.clientX - b.left;
@@ -114,10 +116,11 @@ class Slider {
 		}
 	}
 
-	mouse_callback(evt) {
-		evt.preventDefault();
-		if (evt.buttons == undefined || evt.buttons != 1) return;
-		let pos = this.vertical ? evt.layerY : evt.layerX;
+	mouse_callback(e) {
+		e.preventDefault();
+		if (e.buttons == undefined || e.buttons != 1) return;
+		let pos = this.vertical ? e.layerY : e.layerX;
+    if (e.type === "mouseleave") pos = this.vertical ? e.offsetY : e.offsetX;
 		let size = this.calcSize();
 		pos = squish(0, size, pos);
 		this.value = this.calcVal(pos);
@@ -125,16 +128,16 @@ class Slider {
 		this.callback(this.value);
 	}
 
-  scroll_callback(evt) {
-    let d = -evt.deltaY;
+  scroll_callback(e) {
+    let d = -e.deltaY;
     if (d === 0) return;
     if (d < 0) d = -1;
     if (d > 0) d = 1;
     d *= this.scroll_multiplier;
-    let delta = d * (evt.shiftKey ? 3 : 1);
+    let delta = d * (e.shiftKey ? 3 : 1);
     this.setValue(this.value+delta);
     if (this.callback) this.callback(this.value);
-    evt.preventDefault();
+    e.preventDefault();
   }
 }
 

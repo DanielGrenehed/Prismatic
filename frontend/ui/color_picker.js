@@ -95,7 +95,7 @@ class ColorPicker {
 			o.hsv[0] = v/360;
       updateFromHSV();
 		});
-    this.sliders.hue.scroll_multiplier = 2.0;
+    this.sliders.hue.scroll_multiplier = 1.5;
 		this.hsv_container.appendChild(this.sliders.hue.container);
 		this.sliders.hue.slider.classList.add("hue");
 
@@ -244,7 +244,7 @@ class ColorPicker {
 
 	setValue(clr) {
 		const rgb = stringToColor(clr);
-		if (rgb == null) return;
+		if (!rgb) return;
 		this.rgb = rgb;
 		this.hsv = RGBToHSV(this.rgb);
     this.cmy = RGBToCMY(this.rgb);
@@ -252,12 +252,20 @@ class ColorPicker {
 	}
 
 	setRGB(rgb) {
-		if (rgb == null || rgb.length < 3) return;
+		if (!rgb || rgb.length < 3) return;
 		this.rgb = rgb;
 		this.hsv = RGBToHSV(this.rgb);
     this.cmy = RGBToCMY(this.rgb);
 		this.updateValues();
 	}
+
+  setCMY(cmy) {
+    if (!cmy || cmy.length < 3) return;
+    this.cmy = cmy;
+    this.rgb = CMYToRGB(this.cmy);
+    this.hsv = RGBToHSV(this.rgb);
+    this.updateValues();
+  }
 
   addSwatches(s) {
     let o = this;
