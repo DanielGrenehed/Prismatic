@@ -375,7 +375,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 
   fixtures.forEach((f) => {
     let ui = createFixtureUI(f, advanced.updateView, (fixture) => {
-      letnoected = !fixture.selected;
+      let selected = !fixture.selected;
       advanced.ui_elements.forEach((ui) => {
         if (ui?.fixture?.model === fixture.model) {
             ui.setSelected(selected);
