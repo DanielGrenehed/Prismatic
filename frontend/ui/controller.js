@@ -222,7 +222,7 @@ window.addEventListener("gamepadconnected", (event) => {
   showControllerMenu();
   createGamepadUI(event.gamepad);
 
-  console.log("Gamepad connected:", gamepads[event.gamepad.id], "mapping:", event.gamepad.mapping);
+  console.log("Gamepad connected:", gamepads[getName(event.gamepad)], "mapping:", event.gamepad.mapping);
 });
 
 window.addEventListener("gamepaddisconnected", (event) => {
@@ -239,7 +239,9 @@ function constructControllerUI(fixtures) {
   if (!tabbed_container) {
     let infodiv = document.getElementById("d-controller-info");
     infodiv.innerHTML = "";
-    tabbed_container = createTabbedContainer([], (tab) => {});
+    tabbed_container = createTabbedContainer([], (tab) => {
+      console.log("Tab pressed: ", tab);
+    });
     infodiv.appendChild(tabbed_container);
   }
   if (!fixtures) return;

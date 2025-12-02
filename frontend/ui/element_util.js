@@ -97,7 +97,11 @@ function createTabbedContainer(tabs, callback) {
 	container.tabs = {};
 
 	let on_click = (tab_name) => {
-    if (!tabs.includes(tab_name)) return;
+    if (!tab_name) return;
+    if (!container.tabs.hasOwnProperty(tab_name)) {
+      console.error("Trying to set to tab:", tab_name, "tabs:", container.tabs);
+      return;
+    }
     Object.entries(container.tabs).forEach(([tab, tab_container]) => {
       if (tab === tab_name) {
         container.buttons[tab].classList.add("active");
