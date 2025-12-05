@@ -698,4 +698,8 @@ outline:1px solid var(--primary);
     display:flex;
     flex-wrap:wrap;
   }
+  .input-container {
+   flex-direction: column;
+   align-items: center;
+  }
 }

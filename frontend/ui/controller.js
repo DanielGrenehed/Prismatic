@@ -239,9 +239,7 @@ function constructControllerUI(fixtures) {
   if (!tabbed_container) {
     let infodiv = document.getElementById("d-controller-info");
     infodiv.innerHTML = "";
-    tabbed_container = createTabbedContainer([], (tab) => {
-      console.log("Tab pressed: ", tab);
-    });
+    tabbed_container = createTabbedContainer([], (tab) => {});
     infodiv.appendChild(tabbed_container);
   }
   if (!fixtures) return;
