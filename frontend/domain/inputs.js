@@ -2,6 +2,7 @@ import {Slider} from './slider';
 import {ColorPicker} from './colorPicker';
 import {stage} from './updater';
 import {getUnifiedChannels} from './advancedView';
+import {handleSceneConflicts} from './scenes';
 
 function _arrayEquals(a, b) {
 	if (a === b) return true;
@@ -65,6 +66,7 @@ function createInputUI(input, _parent) {
 	
 	function onInputUpdate(input) {
     stage(input.getGroup().fixtures);
+    handleSceneConflicts(input.getGroup().localUpdates());
 	}
 	
   //console.log("inputs.js input:", input);

@@ -9,6 +9,27 @@ function getUniverse(i) {
 	return multiverse[i];
 }
 
+function getMultiverseValues(subs) {
+  let subverses = [];
+  
+  subs.forEach((sub) => {
+    subverses.push(getUniverse(sub.universe).data.slice(sub.start, sub.start + sub.data.length));
+  });
+
+  return subverses;
+}
+
+
+function getSubverseDelta(sub) {
+  let start = getUniverse(sub.universe).data.slice(sub.start, sub.start+sub.data.length);
+  let subverse = {
+    universe: sub.universe,
+    start: sub.start,
+    data: start.map((v, i) => [v, sub.data[i]]),
+  };
+  return subverse;
+}
+
 function updateMultiverse(subverses, skip_cb=false) {
 	let updated = [];
   subverses.forEach((verse) => {
@@ -73,4 +94,4 @@ function createSubverse(universe, start, data) {
 	return new Subverse(universe, start, data);;
 }
 
-export {createSubverse, Subverse, updateMultiverse, addMultiverseChangeCallback, removeMultiverseChangeCallback, getUniverse};
+export {createSubverse, Subverse, updateMultiverse, addMultiverseChangeCallback, removeMultiverseChangeCallback, getUniverse, getMultiverseValues, getSubverseDelta};

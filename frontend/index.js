@@ -4,7 +4,7 @@ import {updateMultiverse, addMultiverseChangeCallback, getUniverse} from './univ
 import {Fixture, createFixtureUI} from './fixtures';
 import {Group} from './groups';
 import {InputGroup, createInputUI} from './inputs';
-import {constructSceneView} from './scenes';
+import {constructSceneView, launchScene, handleSceneConflicts} from './scenes';
 import {constructAdvancedView} from './advancedView';
 import {constructUpdater, stage} from "./updater";
 import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
@@ -36,6 +36,7 @@ clear_btns.forEach((b) => b.addEventListener("click", (e) => {ws.send({type:"tri
 function triggerScene(scene) {
   updateMultiverse(scene.subverses);
   stage(scene);
+  console.log("Ctrl-click on scene:", scene);
 }
 
 function newScene(scene) {
@@ -75,14 +76,15 @@ function onUpdateMessage(json) {
       if (e.ctrlKey && e.shiftKey) {
         deleteScene(scene)
       } else if (e.ctrlKey) {
-        console.log("Ctrl-click on scene:", scene);
-      } else {
         triggerScene(scene);
+      } else {
+        launchScene(scene);
       }
     });
 	}
 	if (json.hasOwnProperty("subverses")) {
 	  updateMultiverse(json.subverses);	
+    handleSceneConflicts(json.subverses);
 	}
   if (json.hasOwnProperty("swatches")) {
     setGlobalSwatches(json.swatches);

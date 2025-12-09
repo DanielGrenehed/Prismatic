@@ -10,6 +10,14 @@ class Group {
     return this.fixtures.map((f) => f.subverse());
 	}
 
+  localUpdates() {
+    let subs = [];
+    this.fixtures.forEach((f) => {
+      subs = subs.concat(f.getSubverseUpdates(false))
+    });
+    return subs;
+  }
+
 	updateChannels(values) {
     this.fixtures.forEach((f) => f.updateChannels(values));
 	}

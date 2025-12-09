@@ -6,6 +6,7 @@ import {stage} from './updater';
 import {refreshUI, getMenu} from './ui';
 import {updateMultiverse} from './universe';
 import {CMYToRGB, RGBToCMY} from './colorUtil';
+import {handleSceneConflicts} from './scenes';
 
 const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y"];
 const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
@@ -39,8 +40,15 @@ function selectedFixtures() {
 
 function updateFixtures(vs) {
   let advanced = getMenu('advanced');
-  advanced.selected_fixtures.forEach((f) => f.updateChannels(vs));
-  updateMultiverse(advanced.selected_fixtures.map((f) => f.subverse()));
+  let updates = [];
+  advanced.selected_fixtures.forEach((f) => {
+    f.updateChannels(vs)
+    updates = updates.concat(f.getSubverseUpdates(false));
+  });
+  const subverses = advanced.selected_fixtures.map((f) => f.subverse());
+  updateMultiverse(subverses);
+  // Only conflict with changed channels @TODO
+  handleSceneConflicts(updates);
   stage(advanced.selected_fixtures);
 }
 
