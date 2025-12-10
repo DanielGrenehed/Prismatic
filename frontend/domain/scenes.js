@@ -28,16 +28,13 @@ let active_scenes = {};
 function launchScene(scene) {
   let end_time = new Date();
   end_time.setSeconds(end_time.getSeconds() + scene.time);
-
   let entry = {
     start: new Date().getTime(),
     end: end_time.getTime(),
     scene: scene,
     subverses: scene.subverses.map((s)=>getSubverseDelta(s)),
   };
-
   active_scenes[scene.name] = entry;
-  //console.log("Launching scene:", scene, "active_scenes:", active_scenes);
 }
 
 function intersect(sub1, sub2) {
@@ -96,15 +93,12 @@ function handleSceneConflicts(subverses) {
       for (const sub2 of subverses) {
         let inter = intersect(sub1, sub2);
         if (inter !== null) {
-          //console.log("Intersection!!!", inter, "sub1:", sub1, "sub2:", sub2);
           scene.subverses = scene.subverses.filter((s) => s !== sub1).concat(inter);
-
           break;
         }
       }
     });
     if (scene.subverses.length === 0) {
-      //console.log("No unaffected channels on running scene:", scene);
       delete active_scenes[name];
     }
   });
@@ -112,7 +106,6 @@ function handleSceneConflicts(subverses) {
 
 const interval = setInterval(function() {
   // Handle active_scenes
-  //
   const now = new Date().getTime();
   Object.entries(active_scenes).forEach(([name, scene]) => {
 
@@ -151,6 +144,6 @@ const interval = setInterval(function() {
       stage({type: Types.Scene, subverses: subverses});
     }
   });
-}, 100);
+}, 50);
 
 export {constructSceneView, launchScene, handleSceneConflicts};

@@ -36,21 +36,21 @@
       "mode":"32ch",
       "universe":1,
       "addresses":[248, 280],
-			"channel_defaults":[{"strobe":255},{"tilt":127},{"pan-tilt_speed":127}]
+			"channel_defaults":[{"strobe":255},{"tilt":127}]
     },
     {
       "model":"hero_wash_300_fc",
       "mode":"26ch",
       "universe":1,
       "addresses":[312, 338],
-      "channel_defaults":[{"strobe":255},{"tilt":127},{"pan-tilt_speed":127}]
+      "channel_defaults":[{"strobe":255},{"tilt":127}]
     },
     {
       "model":"hero_wash_712_z",
       "mode":"15ch",
       "universe":1,
       "addresses":[364, 379, 394, 409, 424],
-      "channel_defaults":[{"strobe":255},{"tilt":127},{"pan-tilt_speed":127}]
+      "channel_defaults":[{"strobe":255},{"tilt":127}]
     }
 	],
 	"unused_fixtures": [],

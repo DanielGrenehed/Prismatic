@@ -15,7 +15,6 @@ function stage(fixture) {
   staged.push(fixture);
 };
 
-
 function constructUpdater(fixtures, ws_) {
   ws = ws_;
 } 
@@ -50,7 +49,7 @@ const interval = setInterval(function() {
       } catch (e) {}
     }
   }
-}, 100);
+}, 50);
 
 
 export {stage, constructUpdater};

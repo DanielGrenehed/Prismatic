@@ -13,6 +13,33 @@ const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
 const STROBE_DIMMER_CHANNELS = ["strobe", "dimmer", "fine_strobe", "fine_dimmer"];
 const ZOOM_FOCUS_CHANNELS = ["zoom", "focus", "fine_zoom", "fine_focus"];
 
+let toggles = {
+  color: {active: false, element: document.getElementById("t-cf-color")},
+  strobe_dimmer: {active: false, element: document.getElementById("t-cf-sd")},
+  position: {active: false, element: document.getElementById("t-cf-pos")},
+  gobo: {active: false, element:document.getElementById("t-cf-gobo")},
+  zoom_focus: {active: false, element:document.getElementById("t-cf-zf")},
+  fine: {active: false, element:document.getElementById("t-cf-fine")},
+};
+
+
+Object.entries(toggles).forEach(([_, t]) => {
+  t.element.addEventListener("click", (e) => {
+    t.element.classList.toggle("toggled");
+    t.active = t.element.classList.contains("toggled");
+    getMenu("advanced").updateView();
+  });
+  t.active = t.element.classList.contains("toggled");
+});
+
+document.getElementById("b-cf-clear").addEventListener("click", (e) => {
+  Object.entries(toggles).forEach(([_, t]) => {
+    t.element.classList.remove("toggled");
+    t.active = false;
+  });
+  getMenu("advanced").updateView();
+});
+
 function getUnifiedChannels(channels, fixtures) {
 		let channel_values = [];
     fixtures.forEach((f) => {
@@ -41,15 +68,15 @@ function selectedFixtures() {
 function updateFixtures(vs) {
   let advanced = getMenu('advanced');
   let updates = [];
-  advanced.selected_fixtures.forEach((f) => {
+  let fixtures = selectedFixtures();
+  fixtures.forEach((f) => {
     f.updateChannels(vs)
     updates = updates.concat(f.getSubverseUpdates(false));
   });
-  const subverses = advanced.selected_fixtures.map((f) => f.subverse());
-  updateMultiverse(subverses);
-  // Only conflict with changed channels @TODO
+  //const subverses = fixtures.map((f) => f.subverse());
+  updateMultiverse(updates);
   handleSceneConflicts(updates);
-  stage(advanced.selected_fixtures);
+  stage(fixtures);
 }
 
 function constructNewSceneMenu(on_new_scene) {
@@ -113,6 +140,167 @@ function constructNewSceneMenu(on_new_scene) {
 	});
 }
 
+function updateView(fixtures) {
+  let advanced = getMenu('advanced');
+  let channels = [];
+  let selected_fixtures = selectedFixtures();
+  selected_fixtures.forEach((f) => {
+    f.channel_names.forEach((channel) => {
+      if (!channels.includes(channel)) channels.push(channel);
+    });
+  });
+
+  let no_filters = Object.entries(toggles).reduce((a, [key,t]) => {
+    if (key ==="fine") return a;
+    return a + t.active?1:0;
+  }, 0) < 1;
+
+  if (!toggles.fine.active) {
+    channels = channels.filter((c) => !c.includes("fine"));
+  }
+  if (!no_filters) {
+    let include = [];
+
+    if (toggles.color.active) {
+      include = include.concat(COLOR_CHANNELS)
+        .concat(channels.filter((c) => c.includes("color")));
+    }
+    if (toggles.position.active) {
+      include = include.concat(POSITION_CHANNELS);
+    }
+    if (toggles.strobe_dimmer.active) {
+      include = include.concat(STROBE_DIMMER_CHANNELS);
+    }
+    if (toggles.zoom_focus.active) {
+      include = include.concat(ZOOM_FOCUS_CHANNELS);
+    }
+    if (toggles.gobo.active) {
+      include = include.concat(["gobo"]).concat(channels.filter((c) => c.includes("gobo") || c.includes("prism")));
+    }
+    
+    channels = channels.filter((c) => include.includes(c));
+  }
+
+  advanced.input_container.innerHTML = "";
+  advanced.updatedSelection(selected_fixtures.length);
+
+  advanced.sliders = [];
+  if (channels.length < 1) {
+    return;
+  }
+
+  if (no_filters || toggles.color.active) {
+    let color_column = newElement("", ["grid-a", "flex-column", "gap"]);
+    advanced.input_container.appendChild(color_column);
+
+    if (["r","g","b"].every(v => channels.includes(v))) {
+      
+      advanced.rgb_picker = new ColorPicker((cp) => {
+        let rgb = cp.rgb;
+        updateFixtures([
+          {p:"r",v:rgb[0]},
+          {p:"g",v:rgb[1]},
+          {p:"b",v:rgb[2]}
+        ]);
+      });
+      advanced.rgb_picker.container.classList.add("grid-a");
+      advanced.rgb_picker.tabbed_container.openTab("RGB");
+      color_column.appendChild(withLabel(advanced.rgb_picker.container, "Channels: R, G, B", false, true));
+
+      channels = channels.filter((c) => !["r","g","b"].includes(c));
+    } else {
+      advanced.rgb_picker = null;
+    }
+
+    if (["c","m","y"].every(v => channels.includes(v))) {
+      advanced.cmy_picker = new ColorPicker((cp) => {
+        let cmy = RGBToCMY(cp.rgb);
+        updateFixtures([
+          {p:"c",v:cmy[0]},
+          {p:"m",v:cmy[1]},
+          {p:"y",v:cmy[2]},
+        ]);
+      });
+      advanced.cmy_picker.container.classList.add("grid-a");
+      advanced.cmy_picker.tabbed_container.openTab("CMY");
+      color_column.appendChild(withLabel(advanced.cmy_picker.container, "Channels: C, M, Y", false, true));
+
+      channels = channels.filter((c) => !["c","m","y"].includes(c));
+    } else {
+      advanced.cmy_picker = null;
+    }
+
+    channels = channels.filter((c) => {
+      if (c.includes("color") || COLOR_CHANNELS.includes(c) ) {
+        advanced.addSlider(c, color_column);
+        return false;
+      } 
+      return true;
+    });
+  }
+
+  let sliders_c = newElement("", ["grid-b","flex-column", "gap"]);
+
+  if (no_filters || toggles.strobe_dimmer) {
+    let strobe_dimmer = newElement("",["flex", "flex-column", "channel-group"]);
+    let add = false;
+    channels = channels.filter((c) => {
+      if (STROBE_DIMMER_CHANNELS.includes(c)) {
+        advanced.addSlider(c, strobe_dimmer);
+        add = true;
+        return false;
+      }
+      return true;
+    });
+    if (add) sliders_c.appendChild(withLabel(strobe_dimmer, "Strobe/Dimmer", false, true));
+  }
+
+  if (no_filters || toggles.position.active) {
+    let position = newElement("",["flex", "flex-column", "channel-group"]);
+    let add = false;
+    channels = channels.filter((c) => {
+      if (POSITION_CHANNELS.includes(c)) {
+        advanced.addSlider(c, position);
+        add = true;
+        return false;
+      }
+      return true;
+    });
+    if (add) sliders_c.appendChild(withLabel(position, "Position", false, true));     
+  }
+
+  if (no_filters || toggles.zoom_focus.active) {
+    let zf = newElement("",["flex", "flex-column", "channel-group"]);
+    let add = false;
+    channels = channels.filter((c) => {
+      if (ZOOM_FOCUS_CHANNELS.includes(c)) {
+        advanced.addSlider(c, zf);
+        add = true;
+        return false;
+      }
+      return true;
+    });
+    if (add) sliders_c.appendChild(withLabel(zf, "Zoom/Focus", false, true));     
+  }
+
+  if (no_filters || toggles.gobo.active) {
+    let gobo = newElement("",["flex", "flex-column", "channel-group"]);
+    let add = false;
+    channels = channels.filter((c) => {
+      if (c.includes("gobo") || c.includes("prism")) {
+        advanced.addSlider(c, gobo);
+        add = true;
+        return false;
+      }
+      return true;
+    });
+    if (add) sliders_c.appendChild(withLabel(gobo, "Gobo/Prism", false, true));     
+  }
+  channels.forEach((c) => advanced.addSlider(c, sliders_c));
+  advanced.input_container.appendChild(sliders_c);
+  advanced.redraw();
+}
+
 function constructSelectionMenu() {
   let deselect_all = document.getElementById("b-deselect-all");
   let select_all = document.getElementById("b-select-all");
@@ -146,35 +334,9 @@ function constructSelectionMenu() {
 
 function constructAdvancedView(fixtures, on_new_scene_cb) {
   let advanced = getMenu('advanced');
-	advanced.ui_elements = [];
+  let previously_selected = selectedFixtures();  
 
-  let toggles = {
-    color: {active: false, element: document.getElementById("t-cf-color")},
-    strobe_dimmer: {active: false, element: document.getElementById("t-cf-sd")},
-    position: {active: false, element: document.getElementById("t-cf-pos")},
-    gobo: {active: false, element:document.getElementById("t-cf-gobo")},
-    zoom_focus: {active: false, element:document.getElementById("t-cf-zf")},
-    fine: {active: false, element:document.getElementById("t-cf-fine")},
-  };
-  
-  Object.entries(toggles).forEach(([_, t]) => {
-    t.element.addEventListener("click", (e) => {
-      t.element.classList.toggle("toggled");
-      t.active = t.element.classList.contains("toggled");
-      advanced.updateView();
-    });
-    t.active = t.element.classList.contains("toggled");
-  });
-
-  document.getElementById("b-cf-clear").addEventListener("click", (e) => {
-    Object.entries(toggles).forEach(([_, t]) => {
-      t.element.classList.remove("toggled");
-      t.active = false;
-    });
-    advanced.updateView();
-  });
-
-  const addSlider = (channel, parent) => {
+  advanced.addSlider = (channel, parent) => {
     let s = new Slider(channel, 255, (v) => updateFixtures([{p:channel,v:v}]));
     parent.appendChild(s.container);
     s.channel = channel;
@@ -183,29 +345,27 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
 
   let input_container = document.getElementById("d-input-container");
   input_container.innerHTML = "";
+  advanced.input_container = input_container;
 
 	let {updatedSelection} = constructSelectionMenu();
+  advanced.updatedSelection = updatedSelection;
 	constructNewSceneMenu(on_new_scene_cb);	
   
   let fixture_select_container = document.getElementById("d-fixture-select-container");
   fixture_select_container.innerHTML = "";
 
-	advanced.ui_elements = [];
 	
-  let previously_selected = advanced.selected_fixtures;  
-	advanced.selected_fixtures = [];
-
-
 	advanced.rgb_picker = null;
 	advanced.sliders = [];
 	
 	advanced.redraw = () => {
+    let selected = selectedFixtures();
 		if (advanced.rgb_picker != null) {
-			let rgb = getUnifiedChannels(["r","g","b"], advanced.selected_fixtures);
+			let rgb = getUnifiedChannels(["r","g","b"], selected);
 			advanced.rgb_picker.setRGB(rgb[0]);
 		}
     if (advanced.cmy_picker != null) {
-      let cmy = getUnifiedChannels(["c","m","y"], advanced.selected_fixtures);
+      let cmy = getUnifiedChannels(["c","m","y"], selected);
       if (cmy && cmy.length > 0) {
         advanced.cmy_picker.setRGB(CMYToRGB(cmy[0]));
       } else {
@@ -213,178 +373,15 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
       }
     }
     advanced.sliders.forEach((s) => {
-      let v = getUnifiedChannels([s.channel], advanced.selected_fixtures);
+      let v = getUnifiedChannels([s.channel], selected);
       s.setValue(v[0]);
       s.redraw();
     });
 	};
 
-	advanced.updateView = () => {
-		let channels = [];
-		advanced.selected_fixtures = [];
-    fixtures.forEach((f) => {
-      if (f.selected) {
-        advanced.selected_fixtures.push(f);
-        f.channel_names.forEach((name) => {
-          if (!channels.includes(name)) channels.push(name);
-        });
-      }
-    });
+  advanced.updateView = () => {updateView(fixtures);};
 
-    let no_filters = Object.entries(toggles).reduce((a, [key,t]) => {
-      if (key ==="fine") return a;
-      return a + t.active?1:0;
-    }, 0) < 1;
-
-    if (!toggles.fine.active) {
-      channels = channels.filter((c) => !c.includes("fine"));
-    }
-    if (!no_filters) {
-      let include = [];
-
-      if (toggles.color.active) {
-        include = include.concat(COLOR_CHANNELS)
-          .concat(channels.filter((c) => c.includes("color")));
-      }
-      if (toggles.position.active) {
-        include = include.concat(POSITION_CHANNELS);
-      }
-      if (toggles.strobe_dimmer.active) {
-        include = include.concat(STROBE_DIMMER_CHANNELS);
-      }
-      if (toggles.zoom_focus.active) {
-        include = include.concat(ZOOM_FOCUS_CHANNELS);
-      }
-      if (toggles.gobo.active) {
-        include = include.concat(["gobo"]).concat(channels.filter((c) => c.includes("gobo") || c.includes("prism")));
-      }
-      
-      channels = channels.filter((c) => include.includes(c));
-    }
-
-		input_container.innerHTML = "";
-		updatedSelection(advanced.selected_fixtures.length);
-
-		advanced.sliders = [];
-    if (channels.length < 1) {
-      return;
-    }
-
-    if (no_filters || toggles.color.active) {
-      let color_column = newElement("", ["grid-a", "flex-column", "gap"]);
-      input_container.appendChild(color_column);
-
-      if (["r","g","b"].every(v => channels.includes(v))) {
-        
-        advanced.rgb_picker = new ColorPicker((cp) => {
-          let rgb = cp.rgb;
-          updateFixtures([
-            {p:"r",v:rgb[0]},
-            {p:"g",v:rgb[1]},
-            {p:"b",v:rgb[2]}
-          ]);
-        });
-        advanced.rgb_picker.container.classList.add("grid-a");
-        advanced.rgb_picker.tabbed_container.openTab("RGB");
-        color_column.appendChild(withLabel(advanced.rgb_picker.container, "Channels: R, G, B", false, true));
-
-        channels = channels.filter((c) => !["r","g","b"].includes(c));
-      } else {
-        advanced.rgb_picker = null;
-      }
-
-      if (["c","m","y"].every(v => channels.includes(v))) {
-        advanced.cmy_picker = new ColorPicker((cp) => {
-          let cmy = RGBToCMY(cp.rgb);
-          updateFixtures([
-            {p:"c",v:cmy[0]},
-            {p:"m",v:cmy[1]},
-            {p:"y",v:cmy[2]},
-          ]);
-        });
-        advanced.cmy_picker.container.classList.add("grid-a");
-        advanced.cmy_picker.tabbed_container.openTab("CMY");
-        color_column.appendChild(withLabel(advanced.cmy_picker.container, "Channels: C, M, Y", false, true));
-
-        channels = channels.filter((c) => !["c","m","y"].includes(c));
-      } else {
-        advanced.cmy_picker = null;
-      }
-
-      channels = channels.filter((c) => {
-        if (c.includes("color") || COLOR_CHANNELS.includes(c) ) {
-          addSlider(c, color_column);
-          return false;
-        } 
-        return true;
-      });
-    }
-
-		let sliders_c = newElement("", ["grid-b","flex-column", "gap"]);
-
-    if (no_filters || toggles.strobe_dimmer) {
-      let strobe_dimmer = newElement("",["flex", "flex-column", "channel-group"]);
-      let add = false;
-      channels = channels.filter((c) => {
-        if (STROBE_DIMMER_CHANNELS.includes(c)) {
-          addSlider(c, strobe_dimmer);
-          add = true;
-          return false;
-        }
-        return true;
-      });
-      if (add) sliders_c.appendChild(withLabel(strobe_dimmer, "Strobe/Dimmer", false, true));
-    }
-
-    if (no_filters || toggles.position.active) {
-       let position = newElement("",["flex", "flex-column", "channel-group"]);
-      let add = false;
-      channels = channels.filter((c) => {
-        if (POSITION_CHANNELS.includes(c)) {
-          addSlider(c, position);
-          add = true;
-          return false;
-        }
-        return true;
-      });
-      if (add) sliders_c.appendChild(withLabel(position, "Position", false, true));     
-    }
-
-    if (no_filters || toggles.zoom_focus.active) {
-       let zf = newElement("",["flex", "flex-column", "channel-group"]);
-      let add = false;
-      channels = channels.filter((c) => {
-        if (ZOOM_FOCUS_CHANNELS.includes(c)) {
-          addSlider(c, zf);
-          add = true;
-          return false;
-        }
-        return true;
-      });
-      if (add) sliders_c.appendChild(withLabel(zf, "Zoom/Focus", false, true));     
-    }
-
-    if (no_filters || toggles.gobo.active) {
-       let gobo = newElement("",["flex", "flex-column", "channel-group"]);
-      let add = false;
-      channels = channels.filter((c) => {
-        if (c.includes("gobo") || c.includes("prism")) {
-          addSlider(c, gobo);
-          add = true;
-          return false;
-        }
-        return true;
-      });
-      if (add) sliders_c.appendChild(withLabel(gobo, "Gobo/Prism", false, true));     
-    }
-    channels.forEach((c) => {
-      addSlider(c, sliders_c);
-    });
-
-		input_container.appendChild(sliders_c);
-    advanced.redraw();
-	};
-
+	advanced.ui_elements = [];
   fixtures.forEach((f) => {
     let ui = createFixtureUI(f, advanced.updateView, (fixture) => {
       let selected = !fixture.selected;
@@ -395,6 +392,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
       });
       advanced.updateView();
     });
+    fixture_select_container.appendChild(ui);
     if (previously_selected && previously_selected.length > 0) {
       previously_selected.forEach((fs, i) => {
         if (fs.isSameFixture(f)) {
@@ -402,7 +400,6 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
         }
       }); 
     }
-    fixture_select_container.appendChild(ui);
     advanced.ui_elements.push(ui);
   });
   advanced.updateView();

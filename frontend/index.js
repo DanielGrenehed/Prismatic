@@ -53,8 +53,8 @@ function onUpdateMessage(json) {
   let home = getMenu("home");
 	if (json.hasOwnProperty("fixtures")) {
 		fixtures = json.fixtures.map((f) => new Fixture(f));
-		constructAdvancedView(fixtures, newScene);
     controller.constructControllerUI(fixtures);
+		constructAdvancedView(fixtures, newScene);
     constructUpdater(fixtures, ws);
 	}
 	if (json.hasOwnProperty("groups")) {

@@ -16,7 +16,7 @@ function applyDelta(value, acc, delta) {
   // Remove whole part from accumulator
   if (newValue < 255) acc -= steps;
 
-  // Normalize accumulator to [0,1)
+  // Normalize accumulator to [0,1]
   if (acc >= 1 && newValue === 255) {
     acc = 1;
   } else {
