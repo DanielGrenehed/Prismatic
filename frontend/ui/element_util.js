@@ -147,10 +147,18 @@ function createTabbedContainer(tabs, callback) {
   container.openTab = (name) => {
     on_click(name);
   };
+  container.hasTab = (name) => {
+    return Object.keys(container.tabs).includes(name);
+  };
+  container.getTab = (name) => {
+    if (!container.tabs.hasOwnProperty(name)) return null;
+    return container.tabs[name];
+  }
 
   tabs.forEach((tab) => container.addTab(tab, true));
 
 	on_click(tabs[0]);
+
   
 	return container;	
 }

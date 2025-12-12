@@ -1,6 +1,8 @@
-import {refreshUI} from './ui';
+import {refreshUI, getMenu} from './ui';
+import {createTabbedContainer, newElement, createLabel} from './elementUtil';
 let multiverse = {};
 let change_callbacks = [];
+let fixtures = [];
 
 function getUniverse(i) {
 	if (!multiverse.hasOwnProperty(i)) {
@@ -55,6 +57,9 @@ function updateMultiverse(subverses, skip_cb=false) {
       }
     } 
   }
+  if (updated.length > 0) {
+    getMenu("multiverse").redraw();
+  }
 	return updated.length != 0;
 }
 
@@ -91,7 +96,59 @@ class Subverse {
 }
 
 function createSubverse(universe, start, data) {
-	return new Subverse(universe, start, data);;
+	return new Subverse(universe, start, data);
 }
 
-export {createSubverse, Subverse, updateMultiverse, addMultiverseChangeCallback, removeMultiverseChangeCallback, getUniverse, getMultiverseValues, getSubverseDelta};
+function constructUniverseView(u) {
+  let universe = newElement("", ["flex", "gap-1", "wrap", "padded", "border"]);
+  universe.data = getUniverse(u).data;
+  universe.ui = universe.data.map((v, i) => {
+    let channel = newElement("", ["background", "rounded", "padded", "byte"]);
+    channel.innerHTML = v;
+    channel.redraw = () => {
+      channel.innerHTML = getUniverse(u).data[i];
+    };
+    channel.title = i;
+    universe.appendChild(channel);
+    return channel;
+  });
+  universe.redraw = () => {
+    universe.ui.forEach((c) => c.redraw());
+  };
+  return universe;
+}
+
+function constructViewOfFixtures() {
+  let view = getMenu("multiverse");
+  fixtures.forEach((f) => {
+    let tab_name = "Universe " + f.universe;
+    
+    if (!view.tabbed_container.hasTab(tab_name)) {
+      let tab = view.tabbed_container.addTab(tab_name);
+      view.universes[f.universe] = constructUniverseView(f.universe);
+      tab.appendChild(view.universes[f.universe]);
+    }
+
+    f.channel_names.forEach((channel, i) => {
+      let idx = i + f.address;
+      let ui = view.universes[f.universe].ui[idx];
+      ui.title = "" + idx + ": " + f.model + " '" + channel + "'";
+    });
+  });
+}
+
+function constructMultiverseView(fs) {
+  let view = getMenu("multiverse");
+  view.body.innerHTML = "";
+  view.universes = {};
+  view.tabbed_container = createTabbedContainer([], (tab) => {});
+  console.log("Multiverse body:", view);
+  view.body.appendChild(view.tabbed_container);
+  view.redraw = () => {
+    Object.entries(view.universes).forEach(([_, u]) => u.redraw());
+  };
+  fixtures = fs; 
+  constructViewOfFixtures();
+}
+
+export {constructMultiverseView, createSubverse, Subverse, updateMultiverse, addMultiverseChangeCallback, removeMultiverseChangeCallback, getUniverse, getMultiverseValues, getSubverseDelta};

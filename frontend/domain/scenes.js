@@ -1,24 +1,33 @@
 import {newElement} from './elementUtil';
+import {getMenu} from './ui';
 import {stage} from "./updater";
 import {updateMultiverse, getMultiverseValues, getSubverseDelta} from './universe';
 import {Types} from './type';
 import {remap, lerp} from './math';
 
+function createSceneUI(scene, _parent, callback) {
+  let s_cont = newElement("", ["grid", "scene-container", "button"]);
+  let s_name = newElement(scene.name, ["lrpad"]);
+  s_cont.appendChild(s_name);
+
+  let s_split = newElement("",["splitter"]);
+  s_cont.appendChild(s_split);
+
+  let s_time = newElement(scene.time + "s", ["lrpad"]);
+  s_cont.appendChild(s_time);
+
+  s_cont.addEventListener('click', (e) => callback(e, scene));
+  _parent.appendChild(s_cont);
+}
+
 function constructSceneView(scenes, _parent, scene_callback) {
+  let body = getMenu("scenes");
+  body.scene_container = document.getElementById("d-scenes-selector");
+  body.scene_container.innerHTML = "";
   scenes.forEach((scene) => {
     scene.type = Types.Scene;
-		let s_cont = newElement("", ["grid", "scene-container", "button"]);
-		let s_name = newElement(scene.name, ["lrpad"]);
-		s_cont.appendChild(s_name);
-
-		let s_split = newElement("",["splitter"]);
-		s_cont.appendChild(s_split);
-
-		let s_time = newElement(scene.time + "s", ["lrpad"]);
-		s_cont.appendChild(s_time);
-
-		s_cont.addEventListener('click', (e) => scene_callback(e, scene));
-		_parent.appendChild(s_cont);
+    createSceneUI(scene, _parent, scene_callback);
+    createSceneUI(scene, body.scene_container, scene_callback);
 	});
   console.log("scenes:", scenes);
 }
@@ -136,7 +145,7 @@ const interval = setInterval(function() {
         return {
           universe: sub.universe,
           start: sub.start,
-          data: sub.data.map(([start, end]) => lerp(start, end, progress)),
+          data: sub.data.map(([start, end]) => Math.floor(lerp(start, end, progress))),
         };
       });
       updateMultiverse(subverses);

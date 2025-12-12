@@ -51,9 +51,13 @@ function getUnifiedChannels(channels, fixtures) {
 		return channel_values;
 }
 
-function getSubverses(fs) {
+function getSubverses(fs, channels=false) {
 	let subverses = [];
-  fs.forEach((f) => subverses.push(f.subverse()));
+  if (channels) {
+    fs.forEach((f) => subverses = subverses.concat(f.channelSubverses(channels)));
+  } else {
+    fs.forEach((f) => subverses.push(f.subverse()));
+  }
 	return subverses;
 }
 
@@ -124,7 +128,11 @@ function constructNewSceneMenu(on_new_scene) {
 
   let create_scene_button = document.getElementById("b-save-scene");
 	create_scene_button.addEventListener('click', () => {
-		let subverses = getSubverses(selectedFixtures());
+    /*
+     *  Get selected channel value subverses
+     * */
+    let {channels} = getSelectedChannels();
+		let subverses = getSubverses(selectedFixtures(), channels);
 		if (subverses.length < 1) {
 			return;
 		}
@@ -140,15 +148,20 @@ function constructNewSceneMenu(on_new_scene) {
 	});
 }
 
-function updateView(fixtures) {
-  let advanced = getMenu('advanced');
+function getAvailableChannels() {
   let channels = [];
   let selected_fixtures = selectedFixtures();
+  getMenu("advanced").updatedSelection(selected_fixtures.length);
   selected_fixtures.forEach((f) => {
     f.channel_names.forEach((channel) => {
       if (!channels.includes(channel)) channels.push(channel);
     });
   });
+  return channels;
+}
+
+function getSelectedChannels() {
+  let channels = getAvailableChannels();
 
   let no_filters = Object.entries(toggles).reduce((a, [key,t]) => {
     if (key ==="fine") return a;
@@ -180,9 +193,13 @@ function updateView(fixtures) {
     
     channels = channels.filter((c) => include.includes(c));
   }
+  return {channels, no_filters};
+}
 
+function updateView(fixtures) {
+  let advanced = getMenu('advanced');
+  let {channels, no_filters} = getSelectedChannels();
   advanced.input_container.innerHTML = "";
-  advanced.updatedSelection(selected_fixtures.length);
 
   advanced.sliders = [];
   if (channels.length < 1) {

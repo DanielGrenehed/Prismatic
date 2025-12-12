@@ -13,8 +13,9 @@
       -->
 			<div class="menubar-tab active" id="home">Home</div>
 			<div class="menubar-tab" id="advanced">Advanced</div>
-      <!--<div class="menubar-tab" id="scenes">Scenes</div>-->
+      <div class="menubar-tab" id="scenes">Scenes</div>
       <div class="menubar-tab hidden" id="controller">Controller</div>
+      <div class="menubar-tab" id="multiverse">Multiverse</div>
 		</div>
 		<div class="flex-end">
 			<div class="menubar-button clear-button">CLEAR</div>
@@ -69,13 +70,20 @@
   </div>
 
   <!-- Scenes view -->
-  <div class="page-body hidden grid-column" id="scenes-body"></div>
+  <div class="page-body hidden grid" id="scenes-body">
+    <div class="flex" id="d-scenes-selector"></div>
+  </div>
 
   <!-- Controller view -->
   <div class="page-body hidden grid-column" id="controller-body">
     <div class="controller-fixture-select-container" id="d-controller-fixture-container"></div>
     <div class="" id="d-controller-info"></div>
   </div>
+
+  <!-- Multiverse view -->
+  <div class="page-body hidden grid" id="multiverse-body">
+  </div>
+
 <footer></footer>
 <div id="loader" class="hidden"></div>
 </body>

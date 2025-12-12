@@ -224,6 +224,13 @@
           "special_function"
         ]}
       ]
-    }
+    },
+    {"name":"fog_1500", 
+			"manufacturer":"ROBE", 
+			"manual":"https://www.robeuk.com/res/downloads/user_manuals/User%20manual%20Fog%201500%20FT.pdf", 
+			"modes":[
+				{"name":"1ch", "channels":["volume"]}
+			]
+		}
 	]
 }

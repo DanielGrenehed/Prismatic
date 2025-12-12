@@ -10,8 +10,9 @@ import {constructUpdater, stage} from "./updater";
 import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
 import {loadMenu, getMenu, refreshUI} from "./ui";
 import {Types} from "./type";
+import {constructMultiverseView} from './universe';
 
-import * as controller from './controller';
+import {constructControllerUI} from './controller';
 
 let host = "ws://"+window.location.hostname+":3030";
 let ws;
@@ -53,7 +54,8 @@ function onUpdateMessage(json) {
   let home = getMenu("home");
 	if (json.hasOwnProperty("fixtures")) {
 		fixtures = json.fixtures.map((f) => new Fixture(f));
-    controller.constructControllerUI(fixtures);
+    constructMultiverseView(fixtures);
+    constructControllerUI(fixtures);
 		constructAdvancedView(fixtures, newScene);
     constructUpdater(fixtures, ws);
 	}

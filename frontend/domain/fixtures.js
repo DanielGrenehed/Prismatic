@@ -74,6 +74,31 @@ class Fixture {
 		return createSubverse(this.universe, this.address, this.channels);
 	}
 
+  channelSubverses(channels) {
+    if (!Array.isArray(channels)) channels = [channels];
+    const result = [];
+    let start = null;
+    let values = [];
+
+    this.channel_names.forEach((name, i) => {
+      if (channels.includes(name)) {
+        if (!start) start = i;
+        values.push(this.channels[i]);
+      } else {
+        if (values.length > 0 && start) {
+          result.push(createSubverse(this.universe, this.address + start, values));
+          start = null;
+          values = [];
+        }
+      }
+    });
+    if (values.length > 0 && start) {
+      result.push(createSubverse(this.universe, this.address + start, values));
+    }
+    console.log("channelSubverses:", result, "channels:", channels);
+    return result;
+  }
+
   hasUpdates() {
     return Object.keys(this.updated).length > 0;
   }
