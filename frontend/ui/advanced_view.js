@@ -130,8 +130,8 @@ function constructNewSceneMenu(on_new_scene) {
     /*
      *  Get selected channel value subverses
      * */
-    let {channels} = getSelectedChannels();
-		let subverses = getSubverses(selectedFixtures(), channels);
+    let {with_fine_channels} = getSelectedChannels();
+		let subverses = getSubverses(selectedFixtures(), with_fine_channels);
 		if (subverses.length < 1) {
 			return;
 		}
@@ -167,9 +167,8 @@ function getSelectedChannels() {
     return a + t.active?1:0;
   }, 0) < 1;
 
-  if (!toggles.fine.active) {
-    channels = channels.filter((c) => !c.includes("fine"));
-  }
+  
+  
   if (!no_filters) {
     let include = [];
 
@@ -192,7 +191,11 @@ function getSelectedChannels() {
     
     channels = channels.filter((c) => include.includes(c));
   }
-  return {channels, no_filters};
+  let with_fine_channels = channels.map((c) => c);
+  if (!toggles.fine.active) {
+    channels = channels.filter((c) => !c.includes("fine"));
+  }
+  return {channels, no_filters, with_fine_channels};
 }
 
 function updateView(fixtures) {
