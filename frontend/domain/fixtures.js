@@ -79,21 +79,32 @@ class Fixture {
     const result = [];
     let start = null;
     let values = [];
+    let channel_names = [];
+    const address = this.address;
 
     this.channel_names.forEach((name, i) => {
       if (channels.includes(name)) {
-        if (!start) start = i;
+        if (start === null) {
+          start = i;
+        }
         values.push(this.channels[i]);
+        channel_names.push(name);
       } else {
         if (values.length > 0 && start) {
-          result.push(createSubverse(this.universe, this.address + start-1, values));
+          let sub_start = address + start;
+          let sub = createSubverse(this.universe, sub_start, values);
+          result.push(sub);
           start = null;
           values = [];
+          channel_names = [];
         }
       }
     });
-    if (values.length > 0 && start) {
-      result.push(createSubverse(this.universe, this.address + start-1, values));
+    if (values.length > 0 && start !== null) {
+      let sub_start = address + start;
+      let sub = createSubverse(this.universe, sub_start, values);
+      result.push(sub);
+
     }
     return result;
   }
@@ -102,22 +113,23 @@ class Fixture {
     const result = [];
     let start = null;
     let values = [];
+    const address = this.address;
 
     this.channel_names.forEach((name, i) => {
       let idx = channels.indexOf(name);
       if (idx !== -1) {
-        if (!start) start = i;
+        if (start === null) start = i;
         values.push(vals[idx]);
       } else {
-        if (values.length > 0 && start) { 
-          result.push(createSubverse(this.universe, this.address + start-1, values));
+        if (values.length > 0 && start !== null) { 
+          result.push(createSubverse(this.universe, this.address + start, values));
           start = null;
           values = [];
         }
       }
     });
-    if (values.length > 0 && start) { 
-          result.push(createSubverse(this.universe, this.address + start-1, values));
+    if (values.length > 0 && start !== null) { 
+          result.push(createSubverse(this.universe, this.address + start, values));
     }
     return result;
   }
