@@ -35,6 +35,7 @@ function setSwatches(swatches) {
     });
     view.swatch_container.appendChild(swatch);
   });
+  view.redraw();
 }
 
 addGlobalSwatchWatcher(setSwatches);
