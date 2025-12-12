@@ -2,11 +2,10 @@ import {withLabel, newElement} from './elementUtil';
 import {createFixtureUI} from './fixtures';
 import {Slider} from './slider';
 import {ColorPicker} from './colorPicker';
-import {stage} from './updater';
+import {stage, handleModifierConflicts} from './updater';
 import {refreshUI, getMenu} from './ui';
 import {updateMultiverse} from './universe';
 import {CMYToRGB, RGBToCMY} from './colorUtil';
-import {handleSceneConflicts} from './scenes';
 
 const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y"];
 const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
@@ -79,7 +78,7 @@ function updateFixtures(vs) {
   });
   //const subverses = fixtures.map((f) => f.subverse());
   updateMultiverse(updates);
-  handleSceneConflicts(updates);
+  handleModifierConflicts(updates);
   stage(fixtures);
 }
 

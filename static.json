@@ -9,14 +9,14 @@
 	"/elementUtil":	{"path":"frontend/ui/element_util.js",		"Content-Type":"text/javascript"},
 	"/advancedView":{"path":"frontend/ui/advanced_view.js", 	"Content-Type":"text/javascript"},
   "/controller": {"path":"frontend/ui/controller.js", "Content-Type":"text/javascript"},
+	"/scenes":	{"path":"frontend/ui/scenes.js",		"Content-Type":"text/javascript"},
   "/ui": {"path":"frontend/ui/ui.js", "Content-Type":"text/javascript"},
 	"/math":	{"path":"frontend/math.js",			"Content-Type":"text/javascript"},
 	"/ws":		{"path":"frontend/websocket.js",		"Content-Type":"text/javascript"},
-	"/universe":	{"path":"frontend/domain/universe.js",		"Content-Type":"text/javascript"},
+	"/universe":	{"path":"frontend/ui/universe.js",		"Content-Type":"text/javascript"},
 	"/fixtures":	{"path":"frontend/domain/fixtures.js",		"Content-Type":"text/javascript"},
 	"/groups":	{"path":"frontend/domain/groups.js",		"Content-Type":"text/javascript"},
 	"/inputs":	{"path":"frontend/domain/inputs.js",		"Content-Type":"text/javascript"},
-	"/scenes":	{"path":"frontend/domain/scenes.js",		"Content-Type":"text/javascript"},
   "/type": {"path":"frontend/type.js", "Content-Type":"text/javascript"},
 	"/favicon.ico": {"content":"", "Content-Type":"image/x-icon"}
 }

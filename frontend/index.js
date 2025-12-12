@@ -4,9 +4,9 @@ import {updateMultiverse, addMultiverseChangeCallback, getUniverse} from './univ
 import {Fixture, createFixtureUI} from './fixtures';
 import {Group} from './groups';
 import {InputGroup, createInputUI} from './inputs';
-import {constructSceneView, launchScene, handleSceneConflicts} from './scenes';
+import {constructSceneView} from './scenes';
 import {constructAdvancedView} from './advancedView';
-import {constructUpdater, stage} from "./updater";
+import {constructUpdater, stage, launchScene, handleModifierConflicts} from "./updater";
 import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
 import {loadMenu, getMenu, refreshUI} from "./ui";
 import {Types} from "./type";
@@ -86,7 +86,7 @@ function onUpdateMessage(json) {
 	}
 	if (json.hasOwnProperty("subverses")) {
 	  updateMultiverse(json.subverses);	
-    handleSceneConflicts(json.subverses);
+    handleModifierConflicts(json.subverses);
 	}
   if (json.hasOwnProperty("swatches")) {
     setGlobalSwatches(json.swatches);
