@@ -62,6 +62,7 @@ function addGlobalSwatches(swatch) {
   pickers.forEach((p) => p.addSwatches(swatch));
   __addSwatch(swatch);
   if (l !== swatches.length && on_swatches_callback) on_swatches_callback(swatches);
+  global_swatch_watchers.forEach((cb) => cb(swatches));
 }
 
 function addPicker(picker) {
