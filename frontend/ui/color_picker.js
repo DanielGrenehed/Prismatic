@@ -54,6 +54,7 @@ function removeGlobalSwatches(s) {
     p.addSwatches(swatches);
   });
   if (on_swatches_callback) on_swatches_callback(swatches);
+  global_swatch_watchers.forEach((cb) => cb(swatches));
 }
 
 function addGlobalSwatches(swatch) {
