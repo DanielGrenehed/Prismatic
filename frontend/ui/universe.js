@@ -142,7 +142,6 @@ function constructMultiverseView(fs) {
   view.body.innerHTML = "";
   view.universes = {};
   view.tabbed_container = createTabbedContainer([], (tab) => {});
-  console.log("Multiverse body:", view);
   view.body.appendChild(view.tabbed_container);
   view.redraw = () => {
     Object.entries(view.universes).forEach(([_, u]) => u.redraw());

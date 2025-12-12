@@ -81,21 +81,48 @@ class Fixture {
     let values = [];
 
     this.channel_names.forEach((name, i) => {
+      console.log("channel:",name,"i:",i, "ch:", i+this.address);
       if (channels.includes(name)) {
         if (!start) start = i;
         values.push(this.channels[i]);
       } else {
         if (values.length > 0 && start) {
-          result.push(createSubverse(this.universe, this.address + start, values));
+          result.push(createSubverse(this.universe, this.address + start-1, values));
           start = null;
           values = [];
         }
       }
     });
     if (values.length > 0 && start) {
-      result.push(createSubverse(this.universe, this.address + start, values));
+      result.push(createSubverse(this.universe, this.address + start-1, values));
     }
-    console.log("channelSubverses:", result, "channels:", channels);
+    return result;
+  }
+
+  getFutureChannelSubverses(channels, vals) {
+    const result = [];
+    let start = null;
+    let values = [];
+
+    this.channel_names.forEach((name, i) => {
+      console.log("channel:",name,"i:",i, "ch:", i+this.address);
+      let idx = channels.indexOf(name);
+      if (idx !== -1) {
+        if (!start) start = i;
+        values.push(vals[idx]);
+        console.log("Adding '"+name+"' to values mapped to " + vals[idx] + " (" + channels[idx] + ") idx:", idx);
+      } else {
+        if (values.length > 0 && start) { 
+          result.push(createSubverse(this.universe, this.address + start-1, values));
+          start = null;
+          values = [];
+        }
+      }
+    });
+    if (values.length > 0 && start) { 
+          result.push(createSubverse(this.universe, this.address + start-1, values));
+    }
+    console.log("fixture address: ", this.address, "result:", result);
     return result;
   }
 
@@ -228,6 +255,9 @@ class Fixture {
 		}
 		return data;
 	}
+
+
+
   pan(d) {
     if (!this.hasPan) return; 
     if (d === 0) return;

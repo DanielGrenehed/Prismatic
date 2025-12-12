@@ -4,14 +4,14 @@ import {updateMultiverse, addMultiverseChangeCallback, getUniverse} from './univ
 import {Fixture, createFixtureUI} from './fixtures';
 import {Group} from './groups';
 import {InputGroup, createInputUI} from './inputs';
-import {constructSceneView} from './scenes';
+import {constructSceneView, setSwatchCallback} from './scenes';
 import {constructAdvancedView} from './advancedView';
-import {constructUpdater, stage, launchScene, handleModifierConflicts} from "./updater";
+import {constructUpdater, stage, launchModifier, handleModifierConflicts} from "./updater";
 import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
+import {stringToColor} from "./colorUtil";
 import {loadMenu, getMenu, refreshUI} from "./ui";
 import {Types} from "./type";
 import {constructMultiverseView} from './universe';
-
 import {constructControllerUI} from './controller';
 
 let host = "ws://"+window.location.hostname+":3030";
@@ -27,6 +27,17 @@ addMultiverseChangeCallback((universe) => {
   fixtures.forEach((f) => f.updateFromSubverse(universe));
   inputs.forEach((i) => i._updateFromFixtures());
   refreshUI();
+});
+setSwatchCallback((c, e) => {
+  let rgb = stringToColor(c);
+  let subverses = [];
+  fixtures.forEach((f) => subverses = subverses.concat(f.getFutureChannelSubverses(["r","g","b"], rgb)));
+  launchModifier({
+    type: Types.ColorChange,
+    color: c,
+    subverses,
+    time: 1,
+  });
 });
 
 setSwatchWatcher((swatches) => ws.send({type:"update", swatches:swatches}));
@@ -80,7 +91,7 @@ function onUpdateMessage(json) {
       } else if (e.ctrlKey) {
         triggerScene(scene);
       } else {
-        launchScene(scene);
+        launchModifier(scene);
       }
     });
 	}

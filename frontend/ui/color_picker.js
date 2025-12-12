@@ -7,6 +7,7 @@ let swatches = [];
 
 let pickers = [];
 let on_swatches_callback=(_)=>{};
+let global_swatch_watchers= [];
 
 function __addSwatch(swatch) {
   if (Array.isArray(swatch)) {
@@ -22,6 +23,10 @@ function setSwatchWatcher(cb) {
   on_swatches_callback = cb;
 }
 
+function addGlobalSwatchWatcher(cb) {
+  global_swatch_watchers.push(cb);
+}
+
 function handlePickers() {
   pickers = pickers.filter((p) => p.container.isConnected);
 }
@@ -34,6 +39,11 @@ function setGlobalSwatches(s) {
     p.clearSwatches();
     p.addSwatches(swatches);
   });
+  global_swatch_watchers.forEach((cb) => cb(swatches));
+}
+
+function getGlobalSwatches() {
+  return swatches;
 }
 
 function removeGlobalSwatches(s) {
@@ -307,4 +317,4 @@ class ColorPicker {
 	}
 }
 
-export {ColorPicker, setGlobalSwatches, addGlobalSwatches, setSwatchWatcher}; 
+export {ColorPicker, setGlobalSwatches, getGlobalSwatches, addGlobalSwatchWatcher, addGlobalSwatches, setSwatchWatcher}; 

@@ -5,16 +5,29 @@ import {remap, lerp} from './math';
 
 let active_modifiers = {};
 
-function launchScene(scene) {
-  let end_time = new Date();
-  end_time.setSeconds(end_time.getSeconds() + scene.time);
-  let entry = {
-    start: new Date().getTime(),
-    end: end_time.getTime(),
-    scene: scene,
-    subverses: scene.subverses.map((s)=>getSubverseDelta(s)),
-  };
-  active_modifiers[scene.name] = entry;
+function getTime(seconds) {
+  let t = new Date();
+  t.setSeconds(t.getSeconds() + seconds);
+  return t.getTime();
+}
+
+function launchModifier(modifier) {
+  
+  if (modifier.type === Types.Scene) {
+    let entry = {
+      start: new Date().getTime(),
+      end: getTime(modifier.time),
+      scene: modifier,
+      subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
+    };
+    active_modifiers[modifier.name] = entry; 
+  } else if (modifier.type === Types.ColorChange) {
+    active_modifiers[modifier.color] = {
+      start: new Date().getTime(),
+      end: getTime(modifier.time),
+      subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
+    };
+  }
 }
 
 function intersect(sub1, sub2) {
@@ -176,4 +189,4 @@ const interval = setInterval(function() {
   }
 }, 50);
 
-export {stage, constructUpdater, handleModifierConflicts, launchScene};
+export {stage, constructUpdater, handleModifierConflicts, launchModifier};
