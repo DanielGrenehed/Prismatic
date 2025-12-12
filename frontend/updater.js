@@ -12,22 +12,23 @@ function getTime(seconds) {
 }
 
 function launchModifier(modifier) {
-  
-  if (modifier.type === Types.Scene) {
-    let entry = {
-      start: new Date().getTime(),
-      end: getTime(modifier.time),
-      scene: modifier,
-      subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
-    };
-    active_modifiers[modifier.name] = entry; 
-  } else if (modifier.type === Types.ColorChange) {
-    active_modifiers[modifier.color] = {
-      start: new Date().getTime(),
-      end: getTime(modifier.time),
-      subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
-    };
-  }
+  switch (modifier.type) {
+    case Types.Scene:
+      active_modifiers[modifier.name] = {
+        start: new Date().getTime(),
+        end: getTime(modifier.time),
+        subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
+      };
+      break;
+    case Types.ColorChange:
+      active_modifiers[modifier.color] = {
+        start: new Date().getTime(),
+        end: getTime(modifier.time),
+        subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
+      };
+      break
+
+  };
 }
 
 function intersect(sub1, sub2) {
