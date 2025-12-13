@@ -85,6 +85,7 @@ function onUpdateMessage(json) {
 	}
 	if (json.hasOwnProperty("scenes")) {
 		scenes = json.scenes.map((scene) => scene);
+    scenes.sort((a,b) => a.name.localeCompare(b.name))
 		let footer = document.getElementsByTagName("footer")[0];
 		footer.innerHTML = "";
 		constructSceneView(scenes, footer, (e, scene) => {
