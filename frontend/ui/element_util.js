@@ -1,3 +1,6 @@
+function log(...args) {
+  if (window?.log?.includes("element_util")) console.log(...args);
+}
 
 function floatLineDisplay(label) {
   let line = newElement("", ["float-line-display"]);
@@ -99,7 +102,7 @@ function createTabbedContainer(tabs, callback) {
 	let on_click = (tab_name) => {
     if (!tab_name) return;
     if (!container.tabs.hasOwnProperty(tab_name)) {
-      console.error("Trying to set to tab:", tab_name, "tabs:", container.tabs);
+      log("Trying to set to tab:", tab_name, "tabs:", container.tabs);
       return;
     }
     Object.entries(container.tabs).forEach(([tab, tab_container]) => {

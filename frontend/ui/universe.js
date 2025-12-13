@@ -1,5 +1,10 @@
 import {refreshUI, getMenu} from './ui';
 import {createTabbedContainer, newElement, createLabel} from './elementUtil';
+
+function log(...args) {
+  if (window?.log?.includes("universe")) console.log(...args);
+}
+
 let multiverse = {};
 let change_callbacks = [];
 let fixtures = [];
@@ -7,6 +12,7 @@ let fixtures = [];
 function getUniverse(i) {
 	if (!multiverse.hasOwnProperty(i)) {
 		multiverse[i] = createSubverse(i, 0, new Array(512).fill(0));
+    log("universe", i, "created");
 	}
 	return multiverse[i];
 }

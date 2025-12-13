@@ -3,6 +3,10 @@ import {Types} from './type';
 import {updateMultiverse, getMultiverseValues, getSubverseDelta} from './universe';
 import {remap, lerp} from './math';
 
+function log(...args) {
+  if (window?.log?.includes("updater")) console.log(...args);
+}
+
 let active_modifiers = {};
 
 function getTime(seconds) {
@@ -114,7 +118,7 @@ function handleActiveModifiers() {
       updateMultiverse(subverses);
       stage({type: Types.Scene, subverses: subverses});
       delete active_modifiers[name];
-      //console.log("Scene finished:", modifier);
+      //log("Scene finished:", modifier);
     } else {
           
     /*
@@ -125,7 +129,7 @@ function handleActiveModifiers() {
      *
       */
       const progress = remap(modifier.start, modifier.end, 0.0, 1.0, now);
-      //console.log("Progress: ", progress, "modifier.start:", modifier.start, "modifier.end:", modifier.end, "now:", now);
+      //.log("Progress: ", progress, "modifier.start:", modifier.start, "modifier.end:", modifier.end, "now:", now);
       const subverses = modifier.subverses.map((sub) => {
         return {
           universe: sub.universe,
@@ -169,7 +173,7 @@ const interval = setInterval(function() {
             if (s.hasUpdates()) {
               s.getSubverseUpdates().forEach((sub) => subverses.push(sub));
             } else {
-              //console.log("No update, sending whole fixture subverse");
+              //log("No update, sending whole fixture subverse");
               //subverses.push(f.subverse());
             }
             break;
@@ -177,7 +181,7 @@ const interval = setInterval(function() {
             s.subverses.forEach((sub) => subverses.push(sub));
             break;
           default:
-            console.log("Updater: Unknown type: ", s.type);
+            log("Updater: Unknown type: ", s.type);
         }
       });
       try {

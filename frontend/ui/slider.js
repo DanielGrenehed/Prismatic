@@ -1,6 +1,10 @@
 import {remap, squish} from './math';
 import {createChild, createLabel} from './elementUtil';
 
+function log(...args) {
+  if (window?.log?.includes("slider")) console.log(...args);
+}
+
 class Slider {
 	constructor(label, maxValue, callback, vertical=false) {
 		this.container = createLabel(label);
@@ -88,10 +92,10 @@ class Slider {
 
 	setValue(v) {
     if (Array.isArray(v) && v.length > 0) v = v[0];
-    //console.log("setValue: ", v);
+    //log("setValue: ", v);
 		let vf = parseFloat(v);
 		if (vf === undefined) {
-			console.log("slider v: ", v," vf",vf," slider:",s);
+			log("slider v: ", v," vf",vf," slider:",s);
 			return;
 		}
 		this.value = squish(0, this.max_value, vf);

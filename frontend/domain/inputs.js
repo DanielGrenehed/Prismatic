@@ -3,6 +3,10 @@ import {ColorPicker} from './colorPicker';
 import {stage, handleModifierConflicts} from './updater';
 import {getUnifiedChannels} from './advancedView';
 
+function log(...args) {
+  if (window?.log?.includes("inputs")) console.log(...args);
+}
+
 function _arrayEquals(a, b) {
 	if (a === b) return true;
 	if (a == null || b == null) return false;
@@ -68,7 +72,7 @@ function createInputUI(input, _parent) {
     handleModifierConflicts(input.getGroup().localUpdates());
 	}
 	
-  //console.log("inputs.js input:", input);
+  log("inputs.js input:", input);
 	let ui;
 	switch (input.type) {
 		case "color":
@@ -116,7 +120,7 @@ function createInputUI(input, _parent) {
 			});	
 			break;
 		default:
-			console.log(`Unknown input type '${input.type}'`);
+			log(`Unknown input type '${input.type}'`);
 	}
 	input._updateFromFixtures();
 	return ui;

@@ -14,6 +14,15 @@ import {Types} from "./type";
 import {constructMultiverseView} from './universe';
 import {constructControllerUI} from './controller';
 
+window.log = [];
+window.logAll = () => {
+ window.log = ["fixtures", "updater", "scenes", "advanced", "inputs", "index", "ui", "universe", "element_util"];
+};
+window.logNone = () => { window.log = [] };
+function log(...args) {
+  if (window?.log?.includes("index")) console.log(...args);
+}
+
 let host = "ws://"+window.location.hostname+":3030";
 let ws;
 let fixtures = [];
@@ -48,7 +57,7 @@ clear_btns.forEach((b) => b.addEventListener("click", (e) => {ws.send({type:"tri
 function triggerScene(scene) {
   updateMultiverse(scene.subverses);
   stage(scene);
-  console.log("Ctrl-click on scene:", scene);
+  log("Ctrl-click on scene:", scene);
 }
 
 function newScene(scene) {
@@ -114,7 +123,7 @@ function onWSMessage(json) {
           return f.subverse();
         }));
       } else {
-        console.log("Unknown trigger:", json.trigger);
+        log("Unknown trigger:", json.trigger);
       }
 			break;
 		case "update":

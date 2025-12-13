@@ -5,6 +5,11 @@ import {createFixtureUI} from './fixtures';
 import {HSVToRGB, colorToString} from './colorUtil';
 import {stage} from './updater';
 
+
+function log(...args) {
+  if (window?.log?.includes("controller")) console.log(...args);
+}
+
 let gamepads = {};
 
 let tabbed_container = null;
@@ -77,7 +82,7 @@ function createGamepadUI(gamepad) {
   const id = getName(gamepad);
   let view = tabbed_container.addTab(id);
   view.color = getColor(id);
-  console.log("Color: ", view.color);
+  log("Color: ", view.color);
   view.classList.add("grid-row");
   view.axes = [];
   view.buttons = [];
@@ -222,11 +227,11 @@ window.addEventListener("gamepadconnected", (event) => {
   showControllerMenu();
   createGamepadUI(event.gamepad);
 
-  console.log("Gamepad connected:", gamepads[getName(event.gamepad)], "mapping:", event.gamepad.mapping);
+  log("Gamepad connected:", gamepads[getName(event.gamepad)], "mapping:", event.gamepad.mapping);
 });
 
 window.addEventListener("gamepaddisconnected", (event) => {
-  console.log("Gamepade disconnected:", event.gamepad);
+  log("Gamepade disconnected:", event.gamepad);
   delete gamepads[getName(event.gamepad)];
   showControllerMenu();
   views[getName(event.gamepad)].unselect();

@@ -7,6 +7,10 @@ import {refreshUI, getMenu} from './ui';
 import {updateMultiverse} from './universe';
 import {CMYToRGB, RGBToCMY} from './colorUtil';
 
+function log(...args) {
+  if (window?.log?.includes("advanced")) console.log(...args);
+}
+
 const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y"];
 const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
 const STROBE_DIMMER_CHANNELS = ["strobe", "dimmer", "fine_strobe", "fine_dimmer"];
@@ -57,6 +61,7 @@ function getSubverses(fs, channels=false) {
   } else {
     fs.forEach((f) => subverses.push(f.subverse()));
   }
+  log("Fixture subverses:", subverses, "fixtures:", fs) 
 	return subverses;
 }
 
@@ -135,7 +140,7 @@ function constructNewSceneMenu(on_new_scene) {
 		if (subverses.length < 1) {
 			return;
 		}
-    console.log("Created scene, subverses:", subverses);
+    log("Created scene, subverses:", subverses);
 		let scene = {
 			type: "scene",
 			trigger: "update",
@@ -388,7 +393,7 @@ function constructAdvancedView(fixtures, on_new_scene_cb) {
       if (cmy && cmy.length > 0) {
         advanced.cmy_picker.setRGB(CMYToRGB(cmy[0]));
       } else {
-        console.log("Trying to get unified cmy channels failed, cmy:", cmy);
+        log("Trying to get unified cmy channels failed, cmy:", cmy);
       }
     }
     advanced.sliders.forEach((s) => {

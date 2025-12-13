@@ -1,3 +1,7 @@
+function log(...args) {
+  if (window?.log?.includes("ui")) console.log(...args);
+}
+
 let menu = {};
 
 function refreshUI() {
@@ -48,7 +52,7 @@ function loadMenu() {
 
 function getMenu(title) {
   if (!menu.hasOwnProperty(title)) {
-    console.error("Tried to get menu with title: '" + title + "' menu:", menu);
+    log("Tried to get menu with title: '" + title + "' menu:", menu);
     return; 
   }
   return menu[title];

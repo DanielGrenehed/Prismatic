@@ -3,6 +3,10 @@ import {getMenu} from './ui';
 import {Types} from './type';
 import {addGlobalSwatchWatcher, getGlobalSwatches} from './colorPicker';
 
+function log(...args) {
+  if (window?.log?.includes("scenes")) console.log(...args);
+}
+
 let on_swatch_callback = (_,__) => {};
 
 function setSwatchCallback(cb) {
@@ -52,7 +56,7 @@ function constructSceneView(scenes, _parent, scene_callback) {
     createSceneUI(scene, view.scene_container, scene_callback);
 	});
   setSwatches(getGlobalSwatches());
-  console.log("scenes:", scenes);
+  log("scenes:", scenes);
 }
 
 export {constructSceneView, setSwatchCallback};
