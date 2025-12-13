@@ -9,8 +9,8 @@ import {CMYToRGB, RGBToCMY} from './colorUtil';
 import {createLogger} from './util';
 const {isLogging, log} = createLogger("advanced");
 
-const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y"];
-const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
+const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y", "cri"];
+const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt", "pan-tilt_macro", "pan-tilt_speed"];
 const STROBE_DIMMER_CHANNELS = ["strobe", "dimmer", "fine_strobe", "fine_dimmer"];
 const ZOOM_FOCUS_CHANNELS = ["zoom", "focus", "fine_zoom", "fine_focus"];
 
