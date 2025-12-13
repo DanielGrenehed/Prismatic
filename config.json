@@ -79,16 +79,20 @@
       ]}]},
 		{"name":"front", "universes":[{"universe":1,"fixtures":[0, 2, 4, 6, 8, 10, 12, 14]}]},
 		{"name":"kors", "universes":[{"universe":1,"fixtures":[16]}]},
-    {"name":"spot", "universes":[{"universe":1,"fixtures":[248,280]}]},
-    {"name":"wash", "universes":[{"universe":1,"fixtures":[312,338]}]},
+    {"name":"spot_1", "universes":[{"universe":1,"fixtures":[248]}]},
+    {"name":"spot_2", "universes":[{"universe":1,"fixtures":[280]}]},
+    {"name":"wash_1", "universes":[{"universe":1,"fixtures":[312]}]},
+    {"name":"wash_2", "universes":[{"universe":1,"fixtures":[338]}]},
     {"name":"bakre-wash", "universes":[{"universe":1,"fixtures":[364,379,394,409,424]}]}
 	],
 	"inputs":[
 		{"name":"Color","type":"color", "group":"color_leds", "channels":["r","g","b"]},
 		{"name":"Front","type":"slider", "group":"front", "channels":["dimmer"]},
 		{"name":"Kors", "type":"slider", "group":"kors", "channels":["w"]},
-    {"name":"Spottar", "type":"slider", "group":"spot", "channels":["dimmer"]},
-    {"name":"Wash", "type":"slider", "group":"wash", "channels":["dimmer"]},
+    {"name":"Spot Vänster", "type":"slider", "group":"spot_1", "channels":["dimmer"]},
+    {"name":"Spot Höger", "type":"slider", "group":"spot_2", "channels":["dimmer"]},
+    {"name":"Wash Vänster", "type":"slider", "group":"wash_1", "channels":["dimmer"]},
+    {"name":"Wash Höger", "type":"slider", "group":"wash_2", "channels":["dimmer"]},
     {"name":"MiniWash", "type":"slider", "group":"bakre-wash", "channels":["dimmer"]}
 	]
 
