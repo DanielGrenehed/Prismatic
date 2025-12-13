@@ -2,10 +2,9 @@ import {refreshUI} from './ui';
 import {Types} from './type';
 import {updateMultiverse, getMultiverseValues, getSubverseDelta} from './universe';
 import {remap, lerp} from './math';
-
-function log(...args) {
-  if (window?.log?.includes("updater")) console.log(...args);
-}
+import {getFixtureChannelNames} from './fixtures';
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("updater");
 
 let active_modifiers = {};
 
@@ -16,6 +15,7 @@ function getTime(seconds) {
 }
 
 function launchModifier(modifier) {
+  log("launching modifier:", modifier);
   switch (modifier.type) {
     case Types.Scene:
       active_modifiers[modifier.name] = {
@@ -116,6 +116,7 @@ function handleActiveModifiers() {
         };
       });
       updateMultiverse(subverses);
+      log("Updating channels", isLogging() ? getFixtureChannelNames(subverses):"");
       stage({type: Types.Scene, subverses: subverses});
       delete active_modifiers[name];
       //log("Scene finished:", modifier);

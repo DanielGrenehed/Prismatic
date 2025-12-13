@@ -2,10 +2,8 @@ import {Slider} from './slider';
 import {ColorPicker} from './colorPicker';
 import {stage, handleModifierConflicts} from './updater';
 import {getUnifiedChannels} from './advancedView';
-
-function log(...args) {
-  if (window?.log?.includes("inputs")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("inputs");
 
 function _arrayEquals(a, b) {
 	if (a === b) return true;

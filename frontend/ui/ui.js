@@ -1,6 +1,5 @@
-function log(...args) {
-  if (window?.log?.includes("ui")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("ui");
 
 let menu = {};
 

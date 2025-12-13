@@ -1,15 +1,13 @@
 import {withLabel, newElement} from './elementUtil';
-import {createFixtureUI} from './fixtures';
+import {createFixtureUI, getFixtureChannelNames} from './fixtures';
 import {Slider} from './slider';
 import {ColorPicker} from './colorPicker';
 import {stage, handleModifierConflicts} from './updater';
 import {refreshUI, getMenu} from './ui';
 import {updateMultiverse} from './universe';
 import {CMYToRGB, RGBToCMY} from './colorUtil';
-
-function log(...args) {
-  if (window?.log?.includes("advanced")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("advanced");
 
 const COLOR_CHANNELS = ["r","g","b","c","m","y","w", "fine_r","fine_g","fine_b", "fine_c","fine_m","fine_y"];
 const POSITION_CHANNELS = ["pan", "tilt", "fine_pan", "fine_tilt"];
@@ -140,7 +138,7 @@ function constructNewSceneMenu(on_new_scene) {
 		if (subverses.length < 1) {
 			return;
 		}
-    log("Created scene, subverses:", subverses);
+    log("Created scene, subverses:", subverses, "channels:", isLogging()?getFixtureChannelNames(subverses):"", "requested channels:", with_fine_channels);
 		let scene = {
 			type: "scene",
 			trigger: "update",

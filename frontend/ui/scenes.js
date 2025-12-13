@@ -2,10 +2,8 @@ import {newElement} from './elementUtil';
 import {getMenu} from './ui';
 import {Types} from './type';
 import {addGlobalSwatchWatcher, getGlobalSwatches} from './colorPicker';
-
-function log(...args) {
-  if (window?.log?.includes("scenes")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("scenes");
 
 let on_swatch_callback = (_,__) => {};
 

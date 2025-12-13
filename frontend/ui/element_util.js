@@ -1,6 +1,5 @@
-function log(...args) {
-  if (window?.log?.includes("element_util")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("element_util");
 
 function floatLineDisplay(label) {
   let line = newElement("", ["float-line-display"]);

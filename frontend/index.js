@@ -1,7 +1,7 @@
 import {addClasses, withLabel} from './elementUtil';
 import {createWS} from './ws';
 import {updateMultiverse, addMultiverseChangeCallback, getUniverse} from './universe';
-import {Fixture, createFixtureUI} from './fixtures';
+import {Fixture, setFixtures, getFixtures} from './fixtures';
 import {Group} from './groups';
 import {InputGroup, createInputUI} from './inputs';
 import {constructSceneView, setSwatchCallback} from './scenes';
@@ -13,19 +13,11 @@ import {loadMenu, getMenu, refreshUI} from "./ui";
 import {Types} from "./type";
 import {constructMultiverseView} from './universe';
 import {constructControllerUI} from './controller';
-
-window.log = [];
-window.logAll = () => {
- window.log = ["fixtures", "updater", "scenes", "advanced", "inputs", "index", "ui", "universe", "element_util"];
-};
-window.logNone = () => { window.log = [] };
-function log(...args) {
-  if (window?.log?.includes("index")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("index");
 
 let host = "ws://"+window.location.hostname+":3030";
 let ws;
-let fixtures = [];
 let groups = [];
 let inputs = [];
 let scenes = [];
@@ -33,14 +25,14 @@ let scenes = [];
 loadMenu();
 
 addMultiverseChangeCallback((universe) => {
-  fixtures.forEach((f) => f.updateFromSubverse(universe));
+  getFixtures().forEach((f) => f.updateFromSubverse(universe));
   inputs.forEach((i) => i._updateFromFixtures());
   refreshUI();
 });
 setSwatchCallback((c, e) => {
   let rgb = stringToColor(c);
   let subverses = [];
-  fixtures.forEach((f) => subverses = subverses.concat(f.getFutureChannelSubverses(["r","g","b"], rgb)));
+  getFixtures().forEach((f) => subverses = subverses.concat(f.getFutureChannelSubverses(["r","g","b"], rgb)));
   launchModifier({
     type: Types.ColorChange,
     color: c,
@@ -73,14 +65,15 @@ function deleteScene(scene) {
 function onUpdateMessage(json) {
   let home = getMenu("home");
 	if (json.hasOwnProperty("fixtures")) {
-		fixtures = json.fixtures.map((f) => new Fixture(f));
+		let fixtures = json.fixtures.map((f) => new Fixture(f));
+    setFixtures(fixtures);
     constructMultiverseView(fixtures);
     constructControllerUI(fixtures);
 		constructAdvancedView(fixtures, newScene);
     constructUpdater(fixtures, ws);
 	}
 	if (json.hasOwnProperty("groups")) {
-		groups = json.groups.map((g) => new Group(g, fixtures));
+		groups = json.groups.map((g) => new Group(g, getFixtures()));
 	}
 	if (json.hasOwnProperty("inputs")) {
 		home.body.innerHTML = "";
@@ -118,7 +111,7 @@ function onWSMessage(json) {
 	switch (json.type) {
 		case "trigger":
       if (json.trigger === "clear") {
-        updateMultiverse(fixtures.map((f) => {
+        updateMultiverse(getFixtures().map((f) => {
           f.reset();
           return f.subverse();
         }));

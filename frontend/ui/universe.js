@@ -1,9 +1,7 @@
 import {refreshUI, getMenu} from './ui';
 import {createTabbedContainer, newElement, createLabel} from './elementUtil';
-
-function log(...args) {
-  if (window?.log?.includes("universe")) console.log(...args);
-}
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("universe");
 
 let multiverse = {};
 let change_callbacks = [];

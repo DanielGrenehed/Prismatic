@@ -1,9 +1,47 @@
 import {createSubverse} from './universe';
 import {newElement} from './elementUtil';
 import {Types} from './type';
+import {createLogger} from './util';
+const {isLogging, log} = createLogger("fixtures");
 
-function log(...args) {
-  if (window?.log?.includes("fixtures")) console.log(...args);
+let fixtures = [];
+
+function setFixtures(fs) {
+  fixtures = fs;
+}
+
+function getFixtures() {
+  return fixtures;
+}
+
+function inside(a, b) {return (b.start <= a.end && b.end >= a.start);}
+
+function intersects(a, b) {
+  if (b.start < a.start && b.end >= a.start) return true;
+  if (b.start <= a.end && b.end >= a.end) return true;
+  if (inside(a, b)||inside(b, a)) return true;
+  return false;
+}
+
+function getFixtureChannelNames(subs) {
+  let channels = [];
+  // {channel, value}
+  fixtures.forEach((f) => {
+    subs.forEach((sub) => {
+      if (sub.universe !== f.universe) return;
+        let fp = {start:f.address, end:f.address+f.channel_names.length};
+        if (intersects(fp,{start:sub.start, end:sub.start+sub.data.length})) {
+
+          sub.data.forEach((value, i) => {
+            const pos = sub.start + i;
+            if (pos < fp.start || pos >= fp.end) return;
+            let cp = pos - fp.start;
+            channels.push({channel: f.channel_names[cp], value: value, address: pos});
+          });
+        }
+    });
+  });
+  return channels;
 }
 
 function applyDelta(value, acc, delta) {
@@ -97,7 +135,7 @@ class Fixture {
         channel_names.push(name);
       } else {
         log(i, "not including channel:", name);
-        if (values.length > 0 && start) {
+        if (values.length > 0 && start !== null) {
           let sub_start = address + start;
           let sub = createSubverse(this.universe, sub_start, values);
           result.push(sub);
@@ -105,6 +143,8 @@ class Fixture {
           start = null;
           values = [];
           channel_names = [];
+        } else {
+          log("values:", values, "start:", start);
         }
       }
     });
@@ -408,4 +448,4 @@ function createFixtureUI(fixture, cb, long_press_cb=null) {
 	return sc;
 }
 
-export {Fixture, createFixtureUI};
+export {Fixture, createFixtureUI, setFixtures, getFixtures, getFixtureChannelNames};

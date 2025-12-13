@@ -18,6 +18,7 @@
 	"/groups":	{"path":"frontend/domain/groups.js",		"Content-Type":"text/javascript"},
 	"/inputs":	{"path":"frontend/domain/inputs.js",		"Content-Type":"text/javascript"},
   "/type": {"path":"frontend/type.js", "Content-Type":"text/javascript"},
+  "/util": {"path":"frontend/util.js", "Content-Type":"text/javascript"},
 	"/favicon.ico": {"content":"", "Content-Type":"image/x-icon"}
 }
 
