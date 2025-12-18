@@ -7,7 +7,7 @@ import {InputGroup, createInputUI} from './inputs';
 import {constructSceneView, setSwatchCallback} from './scenes';
 import {constructAdvancedView} from './advancedView';
 import {constructUpdater, stage, launchModifier, handleModifierConflicts} from "./updater";
-import {setGlobalSwatches, setSwatchWatcher} from "./colorPicker";
+import {setGlobalSwatches, setSwatchWatcher} from "./swatches";
 import {stringToColor} from "./colorUtil";
 import {loadMenu, getMenu, refreshUI} from "./ui";
 import {Types} from "./type";

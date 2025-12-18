@@ -4,6 +4,7 @@
 	"/css":		{"path":"frontend/ui/style.css",		"Content-Type":"text/css"},
 	"/slider":	{"path":"frontend/ui/slider.js",		"Content-Type":"text/javascript"},
 	"/colorPicker":	{"path":"frontend/ui/color_picker.js",		"Content-Type":"text/javascript"},
+  "/swatches": {"path":"frontend/ui/swatches.js", "Content-Type":"text/javascript"},
 	"/colorUtil":	{"path":"frontend/color_util.js",		"Content-Type":"text/javascript"},
   "/updater": {"path":"frontend/updater.js", "Content-Type":"text/javascript"},
 	"/elementUtil":	{"path":"frontend/ui/element_util.js",		"Content-Type":"text/javascript"},

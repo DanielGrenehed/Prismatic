@@ -1,7 +1,7 @@
 import {newElement} from './elementUtil';
 import {getMenu} from './ui';
 import {Types} from './type';
-import {addGlobalSwatchWatcher, getGlobalSwatches} from './colorPicker';
+import {addGlobalSwatchWatcher, getGlobalSwatches, createSwatchUI} from './swatches';
 import {createLogger} from './util';
 const {isLogging, log} = createLogger("scenes");
 
@@ -30,9 +30,7 @@ function setSwatches(swatches) {
   let view = getMenu("scenes");   
   view.swatch_container.innerHTML = "";
   swatches.forEach((color) => {
-    let swatch = newElement("", ["swatch"]);
-    swatch.style.background = color;
-    swatch.addEventListener("click", (e) => {
+    let swatch = createSwatchUI(color, (e) => {
       on_swatch_callback(color, e);
     });
     view.swatch_container.appendChild(swatch);
