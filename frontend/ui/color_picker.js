@@ -1,7 +1,23 @@
 import {Slider} from './slider';
 import {createChild, createTabbedContainer, newElement} from './elementUtil';
 import {HSVToRGB, RGBToHSV, RGBToCMY, CMYToRGB, colorToString, stringToColor, isHexColor} from './colorUtil';
-import {addPicker, addGlobalSwatches, removeGlobalSwatches, createSwatchUI} from './swatches';
+import {addGlobalSwatches, removeGlobalSwatches, addGlobalSwatchWatcher, getGlobalSwatches, createSwatchUI} from './swatches';
+
+let pickers = [];
+addGlobalSwatchWatcher((swatches) => {
+  pickers = pickers.filter((p) => p.container.isConnected);
+  pickers.forEach((p) => {
+    p.clearSwatches();
+    p.addSwatches(swatches);
+  });
+});
+
+function addPicker(picker) {
+  if (!pickers.includes(picker)) {
+    pickers.push(picker);
+    picker.addSwatches(getGlobalSwatches());
+  }
+}
 
 class ColorPicker {
 	constructor(callback) {
