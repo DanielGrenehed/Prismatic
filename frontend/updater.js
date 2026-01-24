@@ -125,10 +125,10 @@ function handleActiveModifiers() {
         };
       });
       updateMultiverse(subverses);
-      log("Updating channels", isLogging() ? getFixtureChannelNames(subverses):"");
+      log("Modifier '"+name+"' updating channels", isLogging() ? getFixtureChannelNames(subverses):"");
       stage({type: Types.Scene, subverses: subverses});
       delete active_modifiers[name];
-      log("Modifier finished:", modifier);
+      log("Modifier '" + name + "' finished:", modifier);
     } else {
           
     /*
