@@ -15,24 +15,33 @@ function getTime(seconds) {
 }
 
 function launchModifier(modifier) {
-  log("launching modifier:", modifier);
+  let mod = null;
+  let name = "";
   switch (modifier.type) {
     case Types.Scene:
-      active_modifiers[modifier.name] = {
+      name = modifier.name;
+      mod = {
         start: new Date().getTime(),
         end: getTime(modifier.time),
         subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
       };
       break;
     case Types.ColorChange:
-      active_modifiers[modifier.color] = {
+      name = modifier.color;
+      mod = {
         start: new Date().getTime(),
         end: getTime(modifier.time),
         subverses: modifier.subverses.map((s)=>getSubverseDelta(s)),
       };
       break
-
   };
+  if (mod) {
+    handleModifierConflicts(modifier.subverses);
+    active_modifiers[name] = mod;
+    log("Launching modifier:", mod, "name:", name, "origin:", modifier);
+  } else {
+    log("Failed to launch modifier:", modifier);
+  }
 }
 
 function intersect(sub1, sub2) {
@@ -119,7 +128,7 @@ function handleActiveModifiers() {
       log("Updating channels", isLogging() ? getFixtureChannelNames(subverses):"");
       stage({type: Types.Scene, subverses: subverses});
       delete active_modifiers[name];
-      //log("Scene finished:", modifier);
+      log("Modifier finished:", modifier);
     } else {
           
     /*
